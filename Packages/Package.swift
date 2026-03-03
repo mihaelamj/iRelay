@@ -268,7 +268,12 @@ let targets: [Target] = {
 
     let sessionsTarget = Target.target(
         name: "Sessions",
-        dependencies: ["Shared", "ClawLogging", "Storage"]
+        dependencies: [
+            "Shared",
+            "ClawLogging",
+            "Storage",
+            .product(name: "GRDB", package: "GRDB.swift"),
+        ]
     )
     let sessionsTestsTarget = Target.testTarget(
         name: "SessionsTests",
@@ -317,8 +322,10 @@ let targets: [Target] = {
             "Agents",
             "ChannelKit",
             "ProviderKit",
+            "Shared",
             "Storage",
             "Scheduling",
+            "ClawLogging",
         ]
     )
 
@@ -346,6 +353,11 @@ let targets: [Target] = {
             "OpenAIProvider",
             "OllamaProvider",
             "GeminiProvider",
+            // Core
+            "ClawSecurity",
+            "Storage",
+            "Sessions",
+            "Agents",
             // Features
             "Voice",
             "Memory",
