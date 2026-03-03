@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Storage
 
-@Test func storageImports() async throws {
-    // Verify module compiles and imports
+final class StorageTests: XCTestCase {
+    func testStorageImports() {
+        // Verify module compiles and imports
+    }
 }

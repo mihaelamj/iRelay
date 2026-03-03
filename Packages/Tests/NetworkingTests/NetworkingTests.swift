@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Networking
 
-@Test func networkingImports() async throws {
-    // Verify module compiles and imports
+final class NetworkingTests: XCTestCase {
+    func testNetworkingImports() {
+        // Verify module compiles and imports
+    }
 }

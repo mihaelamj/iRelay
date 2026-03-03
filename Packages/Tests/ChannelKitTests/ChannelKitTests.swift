@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import ChannelKit
 
-@Test func channelKitImports() async throws {
-    // Verify module compiles and imports
+final class ChannelKitTests: XCTestCase {
+    func testChannelKitImports() {
+        // Verify module compiles and imports
+    }
 }

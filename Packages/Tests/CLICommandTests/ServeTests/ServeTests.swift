@@ -1,5 +1,7 @@
-import Testing
+import XCTest
 
-@Test func serveCommandExists() async throws {
-    // Verify serve command
+final class ServeTests: XCTestCase {
+    func testServeCommandExists() {
+        // Verify serve command
+    }
 }

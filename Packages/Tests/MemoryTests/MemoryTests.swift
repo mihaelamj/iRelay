@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Memory
 
-@Test func memoryImports() async throws {
-    // Verify module compiles and imports
+final class MemoryTests: XCTestCase {
+    func testMemoryImports() {
+        // Verify module compiles and imports
+    }
 }

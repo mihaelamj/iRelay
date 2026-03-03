@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Sessions
 
-@Test func sessionsImports() async throws {
-    // Verify module compiles and imports
+final class SessionsTests: XCTestCase {
+    func testSessionsImports() {
+        // Verify module compiles and imports
+    }
 }

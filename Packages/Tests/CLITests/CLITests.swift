@@ -1,5 +1,7 @@
-import Testing
+import XCTest
 
-@Test func cliImports() async throws {
-    // Verify CLI module compiles
+final class CLITests: XCTestCase {
+    func testCliImports() {
+        // Verify CLI module compiles
+    }
 }

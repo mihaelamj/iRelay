@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import ClawLogging
 
-@Test func clawLoggingImports() async throws {
-    // Verify module compiles and imports
+final class ClawLoggingTests: XCTestCase {
+    func testClawLoggingImports() {
+        // Verify module compiles and imports
+    }
 }

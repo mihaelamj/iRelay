@@ -1,5 +1,7 @@
-import Testing
+import XCTest
 
-@Test func chatCommandExists() async throws {
-    // Verify chat command
+final class ChatTests: XCTestCase {
+    func testChatCommandExists() {
+        // Verify chat command
+    }
 }

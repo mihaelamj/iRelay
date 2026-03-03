@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import OpenAIProvider
 
-@Test func openAIProviderImports() async throws {
-    // Verify module compiles and imports
+final class OpenAIProviderTests: XCTestCase {
+    func testOpenAIProviderImports() {
+        // Verify module compiles and imports
+    }
 }

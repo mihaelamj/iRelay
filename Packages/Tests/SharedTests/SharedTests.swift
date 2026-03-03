@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Shared
 
-@Test func sharedImports() async throws {
-    // Verify module compiles and imports
+final class SharedTests: XCTestCase {
+    func testSharedImports() {
+        // Verify module compiles and imports
+    }
 }

@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Voice
 
-@Test func voiceImports() async throws {
-    // Verify module compiles and imports
+final class VoiceTests: XCTestCase {
+    func testVoiceImports() {
+        // Verify module compiles and imports
+    }
 }

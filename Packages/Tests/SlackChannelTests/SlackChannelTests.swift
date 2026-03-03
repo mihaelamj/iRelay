@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import SlackChannel
 
-@Test func slackChannelImports() async throws {
-    // Verify module compiles and imports
+final class SlackChannelTests: XCTestCase {
+    func testSlackChannelImports() {
+        // Verify module compiles and imports
+    }
 }

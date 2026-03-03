@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import Gateway
 
-@Test func gatewayImports() async throws {
-    // Verify module compiles and imports
+final class GatewayTests: XCTestCase {
+    func testGatewayImports() {
+        // Verify module compiles and imports
+    }
 }

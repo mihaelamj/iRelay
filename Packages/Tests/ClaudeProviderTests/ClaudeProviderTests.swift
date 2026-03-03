@@ -1,6 +1,8 @@
-import Testing
+import XCTest
 @testable import ClaudeProvider
 
-@Test func claudeProviderImports() async throws {
-    // Verify module compiles and imports
+final class ClaudeProviderTests: XCTestCase {
+    func testClaudeProviderImports() {
+        // Verify module compiles and imports
+    }
 }
