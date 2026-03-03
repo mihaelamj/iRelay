@@ -22,6 +22,7 @@ let allProducts: [Product] = [
 
     // Channel Implementations
     .singleTargetLibrary("IMessageChannel"),
+    .singleTargetLibrary("WhatsAppChannel"),
     .singleTargetLibrary("TelegramChannel"),
     .singleTargetLibrary("SlackChannel"),
     .singleTargetLibrary("DiscordChannel"),
@@ -161,6 +162,15 @@ let targets: [Target] = {
     let iMessageChannelTarget = Target.target(
         name: "IMessageChannel",
         dependencies: ["ChannelKit", "Shared"]
+    )
+
+    let whatsAppChannelTarget = Target.target(
+        name: "WhatsAppChannel",
+        dependencies: ["ChannelKit", "Shared", "Networking"]
+    )
+    let whatsAppChannelTestsTarget = Target.testTarget(
+        name: "WhatsAppChannelTests",
+        dependencies: ["WhatsAppChannel", "TestSupport"]
     )
 
     let telegramChannelTarget = Target.target(
@@ -323,6 +333,7 @@ let targets: [Target] = {
             "ClawLogging",
             // Channels
             "IMessageChannel",
+            "WhatsAppChannel",
             "TelegramChannel",
             "SlackChannel",
             "DiscordChannel",
@@ -380,6 +391,7 @@ let targets: [Target] = {
         providerKitTarget, providerKitTestsTarget,
         // Channels
         iMessageChannelTarget,
+        whatsAppChannelTarget, whatsAppChannelTestsTarget,
         telegramChannelTarget, telegramChannelTestsTarget,
         slackChannelTarget, slackChannelTestsTarget,
         discordChannelTarget,
