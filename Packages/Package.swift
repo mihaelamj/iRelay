@@ -301,7 +301,13 @@ let targets: [Target] = {
 
     let memoryTarget = Target.target(
         name: "Memory",
-        dependencies: ["Shared", "ClawLogging", "Storage", "ProviderKit"]
+        dependencies: [
+            "Shared",
+            "ClawLogging",
+            "Storage",
+            "ProviderKit",
+            .product(name: "GRDB", package: "GRDB.swift"),
+        ]
     )
     let memoryTestsTarget = Target.testTarget(
         name: "MemoryTests",
