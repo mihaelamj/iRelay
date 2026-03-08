@@ -2,7 +2,13 @@ import XCTest
 @testable import ClawSecurity
 
 final class ClawSecurityTests: XCTestCase {
-    func testSecurityImports() {
-        // Verify module compiles and imports
+    func testKeychainStoreInit() {
+        let store = KeychainStore(service: "com.swiftclaw.test")
+        XCTAssertNotNil(store)
+    }
+
+    func testKeychainStoreDefaultService() {
+        let store = KeychainStore()
+        XCTAssertNotNil(store)
     }
 }
