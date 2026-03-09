@@ -383,6 +383,7 @@ let targets: [Target] = {
             "Storage",
             "Sessions",
             "Agents",
+            "AgentSpawner",
             // Features
             "Voice",
             "Memory",

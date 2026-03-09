@@ -23,6 +23,10 @@ public enum CLIBuilder {
         )
 
         var env = ProcessInfo.processInfo.environment
+        // Strip Claude Code session vars to avoid nesting detection
+        env.removeValue(forKey: "CLAUDECODE")
+        env.removeValue(forKey: "CLAUDE_CODE_SESSION")
+        env.removeValue(forKey: "CLAUDE_CODE_ENTRY_POINT")
         for (key, value) in config.environment {
             env[key] = value
         }
@@ -56,7 +60,12 @@ public enum CLIBuilder {
         prompt: String,
         config: AgentSpawnConfig
     ) -> [String] {
-        var args: [String] = ["-p", prompt, "--output-format", "stream-json"]
+        var args: [String] = [
+            "-p", prompt,
+            "--output-format", "stream-json",
+            "--verbose",
+            "--dangerously-skip-permissions",
+        ]
 
         if let model = config.model {
             args += ["--model", model]

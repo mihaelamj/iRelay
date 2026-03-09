@@ -57,10 +57,14 @@ public actor AgentSpawner {
             attachmentPaths: attachmentPaths
         )
 
+        let stdinPipe = Pipe()
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
+        process.standardInput = stdinPipe
         process.standardOutput = stdoutPipe
         process.standardError = stderrPipe
+        // Close stdin immediately so the child doesn't block waiting for input
+        try? stdinPipe.fileHandleForWriting.close()
 
         let session = AgentSession(
             id: sessionID,

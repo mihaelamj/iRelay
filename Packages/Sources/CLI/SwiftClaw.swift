@@ -12,6 +12,7 @@ struct SwiftClaw: AsyncParsableCommand {
             ConfigCommand.self,
             StatusCommand.self,
             IMessageTestCommand.self,
+            AgentBridgeCommand.self,
         ]
     )
 }
