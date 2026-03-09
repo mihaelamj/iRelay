@@ -6,14 +6,15 @@ import Shared
 // MARK: - iMessage Sender
 
 /// Sends messages via AppleScript bridge to Messages.app.
-enum IMessageSender {
+public enum IMessageSender {
 
     private static let logger = Log.channels
-    private static let tempDirectory = "/tmp/swiftclaw-send"
+    /// Messages.app is sandboxed — it can only access files inside its own Attachments directory.
+    private static let tempDirectory = NSHomeDirectory() + "/Library/Messages/Attachments/swiftclaw-send"
 
     // MARK: - Text Sending
 
-    static func sendText(_ text: String, to recipient: String) throws {
+    public static func sendText(_ text: String, to recipient: String) throws {
         let escaped = escapeAppleScript(text)
         let escapedRecipient = escapeAppleScript(recipient)
 

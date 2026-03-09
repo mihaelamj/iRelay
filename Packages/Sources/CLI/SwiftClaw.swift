@@ -1,7 +1,7 @@
 import ArgumentParser
 
 @main
-struct SwiftClaw: ParsableCommand {
+struct SwiftClaw: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "swiftclaw",
         abstract: "Apple-native AI assistant",
@@ -11,6 +11,7 @@ struct SwiftClaw: ParsableCommand {
             ChatCommand.self,
             ConfigCommand.self,
             StatusCommand.self,
+            IMessageTestCommand.self,
         ]
     )
 }
