@@ -193,10 +193,15 @@ final class SharedTests: XCTestCase {
             .configLoadFailed(path: "/", reason: "r"),
             .configInvalid(key: "k", reason: "r"),
             .secretNotFound("t"), .deliveryFailed(channelID: "c", reason: "r"),
+            .agentCLINotFound("t"),
+            .agentTooManyActive(current: 1, max: 5),
+            .agentNonZeroExit(code: 1, stderr: "err"),
+            .agentTimeout(seconds: 60),
+            .agentIdleTimeout(seconds: 30),
             .chunkingFailed("t"), .timeout(operation: "o", seconds: 1),
             .platformUnsupported(feature: "f"),
         ]
-        XCTAssertEqual(errors.count, 25)
+        XCTAssertEqual(errors.count, 30)
         for error in errors {
             XCTAssertFalse(error.localizedDescription.isEmpty)
         }

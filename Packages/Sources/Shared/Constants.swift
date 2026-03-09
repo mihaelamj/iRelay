@@ -1,3 +1,5 @@
+import Foundation
+
 public enum Defaults {
     public static let gatewayPort: Int = 18789
     public static let gatewayHost = "127.0.0.1"
@@ -11,6 +13,14 @@ public enum Defaults {
 
     public static let defaultAgentID = "main"
     public static let defaultModelID = "claude-sonnet-4-20250514"
+
+    public enum Spawner {
+        public static let defaultTimeout: TimeInterval = 600
+        public static let defaultIdleTimeout: TimeInterval = 120
+        public static let maxConcurrentAgents = 5
+        public static let maxAgentsPerSender = 2
+        public static let progressCoalesceInterval: TimeInterval = 2.0
+    }
 
     public enum TextLimits {
         public static let telegram: Int = 4000

@@ -41,6 +41,7 @@ let allProducts: [Product] = [
     .singleTargetLibrary("Gateway"),
     .singleTargetLibrary("Sessions"),
     .singleTargetLibrary("Agents"),
+    .singleTargetLibrary("AgentSpawner"),
     .singleTargetLibrary("Scheduling"),
     .singleTargetLibrary("Voice"),
     .singleTargetLibrary("Memory"),
@@ -161,7 +162,16 @@ let targets: [Target] = {
 
     let iMessageChannelTarget = Target.target(
         name: "IMessageChannel",
-        dependencies: ["ChannelKit", "Shared"]
+        dependencies: [
+            "ChannelKit",
+            "Shared",
+            "ClawLogging",
+            .product(name: "GRDB", package: "GRDB.swift"),
+        ]
+    )
+    let iMessageChannelTestsTarget = Target.testTarget(
+        name: "IMessageChannelTests",
+        dependencies: ["IMessageChannel", "TestSupport"]
     )
 
     let whatsAppChannelTarget = Target.target(
@@ -285,6 +295,15 @@ let targets: [Target] = {
         dependencies: ["Shared", "ClawLogging", "ProviderKit", "Sessions"]
     )
 
+    let agentSpawnerTarget = Target.target(
+        name: "AgentSpawner",
+        dependencies: ["Shared", "ClawLogging"]
+    )
+    let agentSpawnerTestsTarget = Target.testTarget(
+        name: "AgentSpawnerTests",
+        dependencies: ["AgentSpawner", "TestSupport"]
+    )
+
     let schedulingTarget = Target.target(
         name: "Scheduling",
         dependencies: ["Shared", "ClawLogging"]
@@ -398,7 +417,7 @@ let targets: [Target] = {
         channelKitTarget, channelKitTestsTarget,
         providerKitTarget, providerKitTestsTarget,
         // Channels
-        iMessageChannelTarget,
+        iMessageChannelTarget, iMessageChannelTestsTarget,
         whatsAppChannelTarget, whatsAppChannelTestsTarget,
         telegramChannelTarget, telegramChannelTestsTarget,
         slackChannelTarget, slackChannelTestsTarget,
@@ -416,6 +435,7 @@ let targets: [Target] = {
         gatewayTarget, gatewayTestsTarget,
         sessionsTarget, sessionsTestsTarget,
         agentsTarget,
+        agentSpawnerTarget, agentSpawnerTestsTarget,
         schedulingTarget,
         voiceTarget, voiceTestsTarget,
         memoryTarget, memoryTestsTarget,

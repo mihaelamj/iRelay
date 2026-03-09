@@ -30,4 +30,5 @@ public enum Log {
     public static var delivery: Logger { logger(for: "delivery") }
     public static var scheduler: Logger { logger(for: "scheduler") }
     public static var cli: Logger { logger(for: "cli") }
+    public static var spawner: Logger { logger(for: "spawner") }
 }

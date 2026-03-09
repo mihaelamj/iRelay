@@ -40,6 +40,13 @@ public enum SwiftClawError: Error, Sendable {
     case deliveryFailed(channelID: String, reason: String)
     case chunkingFailed(String)
 
+    // Agent Spawner
+    case agentCLINotFound(String)
+    case agentTooManyActive(current: Int, max: Int)
+    case agentNonZeroExit(code: Int32, stderr: String)
+    case agentTimeout(seconds: Int)
+    case agentIdleTimeout(seconds: Int)
+
     // General
     case timeout(operation: String, seconds: Int)
     case platformUnsupported(feature: String)
@@ -71,6 +78,11 @@ extension SwiftClawError: LocalizedError {
         case .secretNotFound(let name): "Secret not found: \(name)"
         case .deliveryFailed(let id, let reason): "Delivery to \(id) failed: \(reason)"
         case .chunkingFailed(let msg): "Chunking failed: \(msg)"
+        case .agentCLINotFound(let name): "Agent CLI not found: \(name)"
+        case .agentTooManyActive(let current, let max): "Too many active agents (\(current)/\(max))"
+        case .agentNonZeroExit(let code, let stderr): "Agent exited with code \(code): \(stderr)"
+        case .agentTimeout(let secs): "Agent timed out after \(secs)s"
+        case .agentIdleTimeout(let secs): "Agent idle timeout after \(secs)s"
         case .timeout(let op, let secs): "Timeout after \(secs)s: \(op)"
         case .platformUnsupported(let feature): "Platform unsupported: \(feature)"
         }
