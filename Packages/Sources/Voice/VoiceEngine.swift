@@ -26,7 +26,7 @@ public actor VoiceEngine {
         process.waitUntilExit()
         logger.debug("TTS completed: \(text.prefix(50))...")
         #else
-        throw SwiftClawError.platformUnsupported("Voice TTS requires macOS")
+        throw IRelayError.platformUnsupported("Voice TTS requires macOS")
         #endif
     }
 
@@ -47,7 +47,7 @@ public actor VoiceEngine {
         defer { try? FileManager.default.removeItem(at: tempFile) }
         return try Data(contentsOf: tempFile)
         #else
-        throw SwiftClawError.platformUnsupported("Voice synthesis requires macOS")
+        throw IRelayError.platformUnsupported("Voice synthesis requires macOS")
         #endif
     }
 

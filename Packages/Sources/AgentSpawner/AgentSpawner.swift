@@ -35,7 +35,7 @@ public actor AgentSpawner {
     ) throws -> (sessionID: UUID, stream: AsyncThrowingStream<AgentStreamEvent, Error>) {
         // Check global concurrency
         if activeAgents.count >= maxConcurrent {
-            throw SwiftClawError.agentTooManyActive(
+            throw IRelayError.agentTooManyActive(
                 current: activeAgents.count,
                 max: maxConcurrent
             )
@@ -44,7 +44,7 @@ public actor AgentSpawner {
         // Check per-sender concurrency
         let senderCount = activeAgents.values.filter { $0.session.senderID == senderID }.count
         if senderCount >= maxPerSender {
-            throw SwiftClawError.agentTooManyActive(
+            throw IRelayError.agentTooManyActive(
                 current: senderCount,
                 max: maxPerSender
             )
@@ -101,7 +101,7 @@ public actor AgentSpawner {
                     try await Task.sleep(nanoseconds: UInt64(timeoutInterval * 1_000_000_000))
                     process.terminate()
                     continuation.yield(.error("Agent timed out after \(Int(timeoutInterval))s"))
-                    continuation.finish(throwing: SwiftClawError.agentTimeout(seconds: Int(timeoutInterval)))
+                    continuation.finish(throwing: IRelayError.agentTimeout(seconds: Int(timeoutInterval)))
                 }
 
                 // Idle timeout tracking
@@ -114,7 +114,7 @@ public actor AgentSpawner {
                             process.terminate()
                             continuation.yield(.error("Agent idle timeout after \(Int(idleTimeoutInterval))s"))
                             continuation.finish(
-                                throwing: SwiftClawError.agentIdleTimeout(seconds: Int(idleTimeoutInterval))
+                                throwing: IRelayError.agentIdleTimeout(seconds: Int(idleTimeoutInterval))
                             )
                             return
                         }
@@ -155,7 +155,7 @@ public actor AgentSpawner {
                     let stderrText = String(data: stderrData, encoding: .utf8) ?? ""
                     continuation.yield(.error("Process exited with code \(exitCode): \(stderrText)"))
                     continuation.finish(
-                        throwing: SwiftClawError.agentNonZeroExit(code: exitCode, stderr: stderrText)
+                        throwing: IRelayError.agentNonZeroExit(code: exitCode, stderr: stderrText)
                     )
                 } else {
                     continuation.finish()

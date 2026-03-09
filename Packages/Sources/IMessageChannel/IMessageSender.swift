@@ -10,7 +10,7 @@ public enum IMessageSender {
 
     private static let logger = Log.channels
     /// Messages.app is sandboxed — it can only access files inside its own Attachments directory.
-    private static let tempDirectory = NSHomeDirectory() + "/Library/Messages/Attachments/swiftclaw-send"
+    private static let tempDirectory = NSHomeDirectory() + "/Library/Messages/Attachments/irelay-send"
 
     // MARK: - Text Sending
 
@@ -26,7 +26,7 @@ public enum IMessageSender {
             """
 
         guard try runAppleScript(script) != nil else {
-            throw SwiftClawError.channelSendFailed(channelID: "imessage", reason: "AppleScript send text failed")
+            throw IRelayError.channelSendFailed(channelID: "imessage", reason: "AppleScript send text failed")
         }
         logger.debug("Sent iMessage text to \(recipient)")
     }
@@ -45,7 +45,7 @@ public enum IMessageSender {
             """
 
         guard try runAppleScript(script) != nil else {
-            throw SwiftClawError.channelSendFailed(channelID: "imessage", reason: "AppleScript send file failed")
+            throw IRelayError.channelSendFailed(channelID: "imessage", reason: "AppleScript send file failed")
         }
         logger.debug("Sent iMessage file to \(recipient): \(posixPath)")
     }

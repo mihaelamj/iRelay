@@ -72,7 +72,7 @@ public struct OllamaProvider: LLMProvider, Sendable {
                     let (bytes, response) = try await URLSession.shared.bytes(for: request)
                     guard let http = response as? HTTPURLResponse,
                           (200..<300).contains(http.statusCode) else {
-                        throw SwiftClawError.streamingFailed("Ollama HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                        throw IRelayError.streamingFailed("Ollama HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)")
                     }
 
                     for try await line in bytes.lines {

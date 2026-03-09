@@ -85,7 +85,7 @@ public actor WebChatChannel: Channel {
     public func chatHTML() -> String {
         """
         <!DOCTYPE html>
-        <html><head><title>SwiftClaw Chat</title>
+        <html><head><title>iRelay Chat</title>
         <style>
         body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
         #messages { border: 1px solid #ddd; border-radius: 8px; padding: 16px; height: 400px; overflow-y: auto; margin-bottom: 16px; }
@@ -95,7 +95,7 @@ public actor WebChatChannel: Channel {
         #input button { padding: 8px 16px; background: #007AFF; color: white; border: none; border-radius: 6px; cursor: pointer; }
         </style></head>
         <body>
-        <h2>SwiftClaw Chat</h2>
+        <h2>iRelay Chat</h2>
         <div id="messages"></div>
         <div id="input"><input id="msg" placeholder="Type a message..." onkeydown="if(event.key==='Enter')send()">
         <button onclick="send()">Send</button></div>
@@ -111,7 +111,7 @@ public actor WebChatChannel: Channel {
             body: JSON.stringify({sessionID: sid, message: msg})
           });
           const data = await res.json();
-          addMsg('SwiftClaw', data.message, 'bot');
+          addMsg('iRelay', data.message, 'bot');
         }
         function addMsg(who, text, cls) {
           const div = document.getElementById('messages');

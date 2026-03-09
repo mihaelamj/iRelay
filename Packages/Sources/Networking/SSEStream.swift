@@ -45,7 +45,7 @@ public struct SSEStream: Sendable {
                     let (bytes, response) = try await session.bytes(for: request)
                     guard let http = response as? HTTPURLResponse,
                           (200..<300).contains(http.statusCode) else {
-                        throw SwiftClawError.streamingFailed("HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+                        throw IRelayError.streamingFailed("HTTP \((response as? HTTPURLResponse)?.statusCode ?? 0)")
                     }
 
                     var currentEvent: String?

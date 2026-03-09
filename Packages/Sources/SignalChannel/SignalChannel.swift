@@ -43,7 +43,7 @@ public actor SignalChannel: Channel {
         // Verify signal-cli exists
         guard FileManager.default.fileExists(atPath: config.signalCliPath) else {
             status = .error("signal-cli not found")
-            throw SwiftClawError.channelNotFound("signal-cli not found at \(config.signalCliPath)")
+            throw IRelayError.channelNotFound("signal-cli not found at \(config.signalCliPath)")
         }
 
         status = .connected
@@ -60,7 +60,7 @@ public actor SignalChannel: Channel {
 
     public func send(_ message: OutboundMessage) async throws {
         guard let text = message.content.textValue else {
-            throw SwiftClawError.channelSendFailed(channelID: id, reason: "Only text supported")
+            throw IRelayError.channelSendFailed(channelID: id, reason: "Only text supported")
         }
 
         let process = Process()
@@ -77,7 +77,7 @@ public actor SignalChannel: Channel {
         process.waitUntilExit()
 
         guard process.terminationStatus == 0 else {
-            throw SwiftClawError.channelSendFailed(channelID: id, reason: "signal-cli exit \(process.terminationStatus)")
+            throw IRelayError.channelSendFailed(channelID: id, reason: "signal-cli exit \(process.terminationStatus)")
         }
         logger.debug("Signal message sent to \(message.recipientID)")
     }

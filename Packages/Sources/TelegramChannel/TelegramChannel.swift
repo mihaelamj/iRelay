@@ -82,7 +82,7 @@ public actor TelegramChannel: Channel {
 
     public func send(_ message: OutboundMessage) async throws {
         guard let text = message.content.textValue else {
-            throw SwiftClawError.channelSendFailed(channelID: id, reason: "Only text supported")
+            throw IRelayError.channelSendFailed(channelID: id, reason: "Only text supported")
         }
 
         let payload = SendMessageRequest(

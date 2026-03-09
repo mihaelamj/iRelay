@@ -56,7 +56,7 @@ public actor GatewayServer {
         // Status endpoint
         router.get("/status") { _, _ in
             let json = """
-            {"version":"\(SwiftClawVersion.current)","status":"running"}
+            {"version":"\(IRelayVersion.current)","status":"running"}
             """
             return Response(
                 status: .ok,

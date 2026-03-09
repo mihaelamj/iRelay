@@ -56,7 +56,7 @@ public actor AgentRouter {
     ) -> AsyncThrowingStream<StreamEvent, Error> {
         let agentID = session.metadata.agentID
         guard let agent = agents[agentID] else {
-            return AsyncThrowingStream { $0.finish(throwing: SwiftClawError.agentNotFound(agentID)) }
+            return AsyncThrowingStream { $0.finish(throwing: IRelayError.agentNotFound(agentID)) }
         }
 
         return invoke(agent: agent, message: message, session: session, history: history)
@@ -73,7 +73,7 @@ public actor AgentRouter {
             let task = Task {
                 do {
                     guard let provider = await providers.provider(for: agent.providerID) else {
-                        throw SwiftClawError.providerNotFound(agent.providerID)
+                        throw IRelayError.providerNotFound(agent.providerID)
                     }
 
                     let modelID = session.metadata.modelOverride ?? agent.modelID

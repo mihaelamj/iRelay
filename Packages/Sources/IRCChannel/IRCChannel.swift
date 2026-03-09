@@ -61,7 +61,7 @@ public actor IRCChannel: Channel {
 
         guard let input = inStream, let output = outStream else {
             status = .error("Failed to create streams")
-            throw SwiftClawError.connectionFailed("Cannot connect to \(config.server):\(config.port)")
+            throw IRelayError.connectionFailed("Cannot connect to \(config.server):\(config.port)")
         }
 
         input.open()
@@ -71,7 +71,7 @@ public actor IRCChannel: Channel {
 
         // Send IRC registration
         try sendRaw("NICK \(config.nickname)")
-        try sendRaw("USER \(config.nickname) 0 * :SwiftClaw Bot")
+        try sendRaw("USER \(config.nickname) 0 * :iRelay Bot")
 
         // Join channels
         for channel in config.channels {
@@ -86,7 +86,7 @@ public actor IRCChannel: Channel {
     public func stop() async throws {
         readTask?.cancel()
         readTask = nil
-        try? sendRaw("QUIT :SwiftClaw shutting down")
+        try? sendRaw("QUIT :iRelay shutting down")
         inputStream?.close()
         outputStream?.close()
         inputStream = nil
@@ -97,7 +97,7 @@ public actor IRCChannel: Channel {
 
     public func send(_ message: OutboundMessage) async throws {
         guard let text = message.content.textValue else {
-            throw SwiftClawError.channelSendFailed(channelID: id, reason: "Only text supported")
+            throw IRelayError.channelSendFailed(channelID: id, reason: "Only text supported")
         }
         // Chunk for IRC 512-byte limit
         let maxMsg = maxTextLength - message.recipientID.count - 12 // PRIVMSG + overhead
@@ -119,7 +119,7 @@ public actor IRCChannel: Channel {
 
     private func sendRaw(_ line: String) throws {
         guard let output = outputStream else {
-            throw SwiftClawError.channelDisconnected("irc")
+            throw IRelayError.channelDisconnected("irc")
         }
         let data = Data("\(line)\r\n".utf8)
         data.withUnsafeBytes { ptr in

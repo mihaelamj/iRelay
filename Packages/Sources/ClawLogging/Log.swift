@@ -16,7 +16,7 @@ public enum Log {
 
     /// Create a logger for the given subsystem.
     public static func logger(for subsystem: String) -> Logger {
-        Logger(label: "com.swiftclaw.\(subsystem)")
+        Logger(label: "com.irelay.\(subsystem)")
     }
 
     // MARK: - Convenience subsystem loggers

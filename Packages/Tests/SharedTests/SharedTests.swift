@@ -6,7 +6,7 @@ final class SharedTests: XCTestCase {
     // MARK: - Version
 
     func testVersion() {
-        XCTAssertEqual(SwiftClawVersion.current, "0.1.0")
+        XCTAssertEqual(IRelayVersion.current, "0.1.0")
     }
 
     // MARK: - MessageContent
@@ -179,7 +179,7 @@ final class SharedTests: XCTestCase {
     // MARK: - Errors
 
     func testAllErrorCasesHaveDescriptions() {
-        let errors: [SwiftClawError] = [
+        let errors: [IRelayError] = [
             .connectionFailed("t"), .authenticationFailed("t"), .protocolError("t"),
             .channelNotFound("t"), .channelDisconnected("t"),
             .channelSendFailed(channelID: "c", reason: "r"),
@@ -208,8 +208,8 @@ final class SharedTests: XCTestCase {
     }
 
     func testErrorContainsContext() {
-        XCTAssertTrue(SwiftClawError.channelNotFound("telegram").localizedDescription.contains("telegram"))
-        XCTAssertTrue(SwiftClawError.timeout(operation: "fetch", seconds: 30).localizedDescription.contains("fetch"))
+        XCTAssertTrue(IRelayError.channelNotFound("telegram").localizedDescription.contains("telegram"))
+        XCTAssertTrue(IRelayError.timeout(operation: "fetch", seconds: 30).localizedDescription.contains("fetch"))
     }
 
     // MARK: - Paths
@@ -218,7 +218,7 @@ final class SharedTests: XCTestCase {
         XCTAssertFalse(ClawPaths.configDirectory.path.isEmpty)
         XCTAssertFalse(ClawPaths.dataDirectory.path.isEmpty)
         XCTAssertTrue(ClawPaths.configFile.path.contains("config"))
-        XCTAssertTrue(ClawPaths.databaseFile.path.contains("swiftclaw"))
+        XCTAssertTrue(ClawPaths.databaseFile.path.contains("irelay"))
     }
 
     func testAgentDirectory() {
@@ -229,7 +229,7 @@ final class SharedTests: XCTestCase {
 
     func testEnsureDirectoryExists() throws {
         let tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("swiftclaw-test-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("irelay-test-\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager.default.removeItem(at: tmpDir) }
         try ClawPaths.ensureDirectoryExists(tmpDir)
         var isDir: ObjCBool = false
@@ -240,7 +240,7 @@ final class SharedTests: XCTestCase {
     // MARK: - Configuration
 
     func testConfigDefaults() {
-        let config = SwiftClawConfig()
+        let config = IRelayConfig()
         XCTAssertEqual(config.gateway.host, "127.0.0.1")
         XCTAssertEqual(config.gateway.port, 18789)
         XCTAssertNil(config.gateway.authToken)
@@ -250,14 +250,14 @@ final class SharedTests: XCTestCase {
     }
 
     func testConfigCodable() throws {
-        let config = SwiftClawConfig(
+        let config = IRelayConfig(
             gateway: GatewayConfig(host: "0.0.0.0", port: 9999, authToken: "tok"),
             agents: AgentsConfig(agents: [AgentDefinition(id: "main", name: "Main")]),
             channels: ChannelsConfig(enabled: ["tg": ChannelEntry(isEnabled: true)]),
             providers: ProvidersConfig(providers: ["claude": ProviderEntry(isEnabled: true)])
         )
         let data = try JSONEncoder().encode(config)
-        let decoded = try JSONDecoder().decode(SwiftClawConfig.self, from: data)
+        let decoded = try JSONDecoder().decode(IRelayConfig.self, from: data)
         XCTAssertEqual(decoded.gateway.port, 9999)
         XCTAssertEqual(decoded.agents.agents.count, 1)
         XCTAssertTrue(decoded.channels.enabled["tg"]?.isEnabled ?? false)
@@ -267,9 +267,9 @@ final class SharedTests: XCTestCase {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("test-config-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: url) }
-        let config = SwiftClawConfig(gateway: GatewayConfig(host: "localhost", port: 8080))
+        let config = IRelayConfig(gateway: GatewayConfig(host: "localhost", port: 8080))
         try config.save(to: url)
-        let loaded = try SwiftClawConfig.load(from: url)
+        let loaded = try IRelayConfig.load(from: url)
         XCTAssertEqual(loaded.gateway.host, "localhost")
         XCTAssertEqual(loaded.gateway.port, 8080)
     }
@@ -277,7 +277,7 @@ final class SharedTests: XCTestCase {
     func testConfigLoadNonexistentReturnsDefault() throws {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("nonexistent-\(UUID().uuidString).json")
-        let config = try SwiftClawConfig.load(from: url)
+        let config = try IRelayConfig.load(from: url)
         XCTAssertEqual(config.gateway.port, Defaults.gatewayPort)
     }
 

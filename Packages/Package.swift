@@ -49,7 +49,7 @@ let allProducts: [Product] = [
     .singleTargetLibrary("Services"),
 
     // Executables
-    .executable(name: "swiftclaw", targets: ["CLI"]),
+    .executable(name: "irelay", targets: ["CLI"]),
 ]
 
 // -------------------------------------------------------------
@@ -457,7 +457,7 @@ let targets: [Target] = {
 // -------------------------------------------------------------
 
 let package = Package(
-    name: "SwiftClaw",
+    name: "IRelay",
     platforms: [
         .macOS(.v14),
         .iOS(.v17),

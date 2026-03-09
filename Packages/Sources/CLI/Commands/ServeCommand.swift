@@ -30,11 +30,11 @@ struct ServeCommand: AsyncParsableCommand {
         Log.bootstrap(level: level)
         let logger = Log.cli
 
-        logger.info("SwiftClaw v\(SwiftClawVersion.current) starting...")
+        logger.info("iRelay v\(IRelayVersion.current) starting...")
 
         // 2. Load config
         let configURL = config.map { URL(fileURLWithPath: $0) }
-        let appConfig = try SwiftClawConfig.load(from: configURL ?? ClawPaths.configFile)
+        let appConfig = try IRelayConfig.load(from: configURL ?? ClawPaths.configFile)
 
         // 3. Initialize database
         let db = try ClawDatabase()
@@ -106,7 +106,7 @@ struct ServeCommand: AsyncParsableCommand {
         )
 
         try await orchestrator.start()
-        logger.info("SwiftClaw is running. Press Ctrl+C to stop.")
+        logger.info("iRelay is running. Press Ctrl+C to stop.")
 
         // Keep alive until signal
         await withCheckedContinuation { (_: CheckedContinuation<Void, Never>) in

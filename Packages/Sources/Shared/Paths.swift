@@ -5,16 +5,16 @@ public enum ClawPaths {
         #if os(macOS) || os(iOS)
         FileManager.default
             .homeDirectoryForCurrentUser
-            .appendingPathComponent(".swiftclaw", isDirectory: true)
+            .appendingPathComponent(".irelay", isDirectory: true)
         #else
-        // XDG_CONFIG_HOME or ~/.config/swiftclaw on Linux
+        // XDG_CONFIG_HOME or ~/.config/irelay on Linux
         if let xdg = ProcessInfo.processInfo.environment["XDG_CONFIG_HOME"] {
             return URL(fileURLWithPath: xdg)
-                .appendingPathComponent("swiftclaw", isDirectory: true)
+                .appendingPathComponent("irelay", isDirectory: true)
         }
         return URL(fileURLWithPath: NSHomeDirectory())
             .appendingPathComponent(".config", isDirectory: true)
-            .appendingPathComponent("swiftclaw", isDirectory: true)
+            .appendingPathComponent("irelay", isDirectory: true)
         #endif
     }
 
@@ -22,17 +22,17 @@ public enum ClawPaths {
         #if os(macOS) || os(iOS)
         FileManager.default
             .homeDirectoryForCurrentUser
-            .appendingPathComponent(".swiftclaw", isDirectory: true)
+            .appendingPathComponent(".irelay", isDirectory: true)
             .appendingPathComponent("data", isDirectory: true)
         #else
         if let xdg = ProcessInfo.processInfo.environment["XDG_DATA_HOME"] {
             return URL(fileURLWithPath: xdg)
-                .appendingPathComponent("swiftclaw", isDirectory: true)
+                .appendingPathComponent("irelay", isDirectory: true)
         }
         return URL(fileURLWithPath: NSHomeDirectory())
             .appendingPathComponent(".local", isDirectory: true)
             .appendingPathComponent("share", isDirectory: true)
-            .appendingPathComponent("swiftclaw", isDirectory: true)
+            .appendingPathComponent("irelay", isDirectory: true)
         #endif
     }
 
@@ -41,7 +41,7 @@ public enum ClawPaths {
     }
 
     public static var databaseFile: URL {
-        dataDirectory.appendingPathComponent("swiftclaw.db")
+        dataDirectory.appendingPathComponent("irelay.db")
     }
 
     public static func agentDirectory(agentID: String) -> URL {

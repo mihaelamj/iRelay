@@ -143,6 +143,6 @@ public enum CLIBuilder {
             // Fall through to throw
         }
 
-        throw SwiftClawError.agentCLINotFound(name)
+        throw IRelayError.agentCLINotFound(name)
     }
 }

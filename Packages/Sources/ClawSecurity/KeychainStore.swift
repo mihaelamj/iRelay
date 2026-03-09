@@ -6,7 +6,7 @@ import Shared
 public struct KeychainStore: Sendable {
     private let service: String
 
-    public init(service: String = "com.swiftclaw") {
+    public init(service: String = "com.irelay") {
         self.service = service
     }
 
@@ -25,7 +25,7 @@ public struct KeychainStore: Sendable {
         addQuery[kSecValueData as String] = data
         let status = SecItemAdd(addQuery as CFDictionary, nil)
         guard status == errSecSuccess else {
-            throw SwiftClawError.secretNotFound("Keychain set failed: \(status)")
+            throw IRelayError.secretNotFound("Keychain set failed: \(status)")
         }
     }
 
@@ -43,7 +43,7 @@ public struct KeychainStore: Sendable {
 
         if status == errSecItemNotFound { return nil }
         guard status == errSecSuccess, let data = item as? Data else {
-            throw SwiftClawError.secretNotFound("Keychain get failed: \(status)")
+            throw IRelayError.secretNotFound("Keychain get failed: \(status)")
         }
         return String(data: data, encoding: .utf8)
     }
@@ -57,7 +57,7 @@ public struct KeychainStore: Sendable {
         ]
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw SwiftClawError.secretNotFound("Keychain delete failed: \(status)")
+            throw IRelayError.secretNotFound("Keychain delete failed: \(status)")
         }
     }
 

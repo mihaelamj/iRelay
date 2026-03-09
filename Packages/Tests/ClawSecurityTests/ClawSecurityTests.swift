@@ -3,7 +3,7 @@ import XCTest
 
 final class ClawSecurityTests: XCTestCase {
     func testKeychainStoreInit() {
-        let store = KeychainStore(service: "com.swiftclaw.test")
+        let store = KeychainStore(service: "com.irelay.test")
         XCTAssertNotNil(store)
     }
 

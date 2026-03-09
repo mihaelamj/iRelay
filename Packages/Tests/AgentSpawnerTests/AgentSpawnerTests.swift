@@ -422,7 +422,7 @@ final class AgentSpawnerTests: XCTestCase {
         do {
             _ = try await spawner.spawn(prompt: "test", config: config, senderID: "user1")
             XCTFail("Expected agentTooManyActive error")
-        } catch let error as SwiftClawError {
+        } catch let error as IRelayError {
             if case .agentTooManyActive(let current, let max) = error {
                 XCTAssertEqual(current, 0)
                 XCTAssertEqual(max, 0)
@@ -443,7 +443,7 @@ final class AgentSpawnerTests: XCTestCase {
         do {
             _ = try await spawner.spawn(prompt: "test", config: config, senderID: "user1")
             XCTFail("Expected agentTooManyActive error")
-        } catch let error as SwiftClawError {
+        } catch let error as IRelayError {
             if case .agentTooManyActive(let current, let max) = error {
                 XCTAssertEqual(current, 0)
                 XCTAssertEqual(max, 0)
@@ -486,7 +486,7 @@ final class AgentSpawnerTests: XCTestCase {
     // MARK: - Error Cases
 
     func testAgentSpawnerErrors() {
-        let errors: [SwiftClawError] = [
+        let errors: [IRelayError] = [
             .agentCLINotFound("claude"),
             .agentTooManyActive(current: 5, max: 5),
             .agentNonZeroExit(code: 1, stderr: "error"),
@@ -499,12 +499,12 @@ final class AgentSpawnerTests: XCTestCase {
     }
 
     func testAgentCLINotFoundContainsName() {
-        let error = SwiftClawError.agentCLINotFound("codex")
+        let error = IRelayError.agentCLINotFound("codex")
         XCTAssertTrue(error.localizedDescription.contains("codex"))
     }
 
     func testAgentTooManyActiveContainsCounts() {
-        let error = SwiftClawError.agentTooManyActive(current: 3, max: 5)
+        let error = IRelayError.agentTooManyActive(current: 3, max: 5)
         XCTAssertTrue(error.localizedDescription.contains("3"))
         XCTAssertTrue(error.localizedDescription.contains("5"))
     }

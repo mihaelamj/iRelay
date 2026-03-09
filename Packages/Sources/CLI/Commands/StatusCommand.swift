@@ -7,6 +7,6 @@ struct StatusCommand: ParsableCommand {
     )
 
     func run() throws {
-        print("SwiftClaw status: idle")
+        print("iRelay status: idle")
     }
 }

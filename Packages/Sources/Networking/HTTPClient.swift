@@ -29,11 +29,11 @@ public struct HTTPClient: Sendable {
     ) async throws -> T {
         let (data, response) = try await raw(path: path, method: method, body: body, headers: headers)
         guard let http = response as? HTTPURLResponse else {
-            throw SwiftClawError.protocolError("Non-HTTP response")
+            throw IRelayError.protocolError("Non-HTTP response")
         }
         guard (200..<300).contains(http.statusCode) else {
             let body = String(data: data, encoding: .utf8) ?? "<binary>"
-            throw SwiftClawError.connectionFailed("HTTP \(http.statusCode): \(body)")
+            throw IRelayError.connectionFailed("HTTP \(http.statusCode): \(body)")
         }
         return try JSONDecoder().decode(T.self, from: data)
     }

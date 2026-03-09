@@ -127,7 +127,7 @@ public actor MCPClient {
 
         let data = try JSONSerialization.data(withJSONObject: request)
         guard let stdin else {
-            throw SwiftClawError.connectionFailed("MCP server not running: \(config.name)")
+            throw IRelayError.connectionFailed("MCP server not running: \(config.name)")
         }
 
         // Write JSON-RPC message with Content-Length header
@@ -137,7 +137,7 @@ public actor MCPClient {
 
         // Read response
         guard let stdout else {
-            throw SwiftClawError.connectionFailed("MCP server not running: \(config.name)")
+            throw IRelayError.connectionFailed("MCP server not running: \(config.name)")
         }
 
         // Read Content-Length header (read until \r\n\r\n)
@@ -154,11 +154,11 @@ public actor MCPClient {
 
         let responseData = stdout.readData(ofLength: length)
         guard let json = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] else {
-            throw SwiftClawError.protocolError("Invalid MCP response")
+            throw IRelayError.protocolError("Invalid MCP response")
         }
 
         if let error = json["error"] as? [String: Any], let message = error["message"] as? String {
-            throw SwiftClawError.toolCallFailed(toolName: method, reason: message)
+            throw IRelayError.toolCallFailed(toolName: method, reason: message)
         }
 
         return json["result"] as? [String: Any] ?? [:]
@@ -200,7 +200,7 @@ public actor MCPRegistry {
                 return try await client.callTool(name: name, argumentsJSON: argumentsJSON)
             }
         }
-        throw SwiftClawError.toolCallFailed(toolName: name, reason: "No MCP server provides this tool")
+        throw IRelayError.toolCallFailed(toolName: name, reason: "No MCP server provides this tool")
     }
 
     /// Stop all servers.

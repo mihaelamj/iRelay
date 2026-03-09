@@ -1,4 +1,4 @@
-# Makefile for SwiftClaw
+# Makefile for iRelay
 # Apple-native AI Assistant
 
 # Configuration
@@ -14,7 +14,7 @@ PROJECT_DIR := $(MAKEFILE_DIR)
 
 # Build configuration
 SWIFT_BUILD_FLAGS = -c release
-PRODUCT_NAME_CLI = swiftclaw
+PRODUCT_NAME_CLI = irelay
 
 # Detect architecture
 ARCH := $(shell uname -m)
@@ -37,7 +37,7 @@ all: build
 
 ## help: Show this help message
 help:
-	@echo "$(BOLD)SwiftClaw - Makefile Help$(RESET)"
+	@echo "$(BOLD)iRelay - Makefile Help$(RESET)"
 	@echo ""
 	@echo "$(BOLD)Available targets:$(RESET)"
 	@echo "  $(GREEN)make build$(RESET)         - Build executable (release mode)"
@@ -64,14 +64,14 @@ build: build-release
 
 ## build-debug: Build in debug mode
 build-debug:
-	@echo "$(BOLD)$(GREEN)Building SwiftClaw (debug)...$(RESET)"
+	@echo "$(BOLD)$(GREEN)Building iRelay (debug)...$(RESET)"
 	$(SWIFT) build --product $(PRODUCT_NAME_CLI)
 	@echo "$(GREEN)✓ Build complete$(RESET)"
 	@echo "  CLI: $(BUILD_DIR)/debug/$(PRODUCT_NAME_CLI)"
 
 ## build-release: Build in release mode (optimized)
 build-release:
-	@echo "$(BOLD)$(GREEN)Building SwiftClaw (release)...$(RESET)"
+	@echo "$(BOLD)$(GREEN)Building iRelay (release)...$(RESET)"
 	$(SWIFT) build $(SWIFT_BUILD_FLAGS) --product $(PRODUCT_NAME_CLI)
 	@echo "$(GREEN)✓ Build complete$(RESET)"
 	@echo "  CLI: $(BUILD_DIR)/release/$(PRODUCT_NAME_CLI)"
@@ -191,7 +191,7 @@ watch:
 
 ## version: Show version information
 version:
-	@echo "$(BOLD)SwiftClaw Version Information$(RESET)"
+	@echo "$(BOLD)iRelay Version Information$(RESET)"
 	@if [ -f $(BUILD_DIR)/release/$(PRODUCT_NAME_CLI) ]; then \
 		echo "  CLI: $$($(BUILD_DIR)/release/$(PRODUCT_NAME_CLI) --version)"; \
 	elif [ -f $(BUILD_DIR)/debug/$(PRODUCT_NAME_CLI) ]; then \

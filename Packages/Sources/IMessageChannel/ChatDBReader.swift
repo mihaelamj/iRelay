@@ -13,7 +13,7 @@ struct ChatDBReader: Sendable {
 
     init(
         dbPath: String = NSHomeDirectory() + "/Library/Messages/chat.db",
-        cursorPath: String = NSHomeDirectory() + "/.swiftclaw/imessage-cursor.txt"
+        cursorPath: String = NSHomeDirectory() + "/.irelay/imessage-cursor.txt"
     ) {
         self.dbPath = dbPath
         self.cursorPath = cursorPath

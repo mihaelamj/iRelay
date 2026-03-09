@@ -29,7 +29,7 @@ struct ChatCommand: AsyncParsableCommand {
         let keychain = KeychainStore()
         guard let apiKey = try keychain.apiKey(for: "claude")
             ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] else {
-            print("Error: No API key. Set ANTHROPIC_API_KEY or run: swiftclaw config set-key claude <key>")
+            print("Error: No API key. Set ANTHROPIC_API_KEY or run: irelay config set-key claude <key>")
             throw ExitCode.failure
         }
 
@@ -59,7 +59,7 @@ struct ChatCommand: AsyncParsableCommand {
 
         var history: [ChatMessage] = []
 
-        print("SwiftClaw Chat (model: \(model))")
+        print("iRelay Chat (model: \(model))")
         print("Type 'exit' or Ctrl+D to quit.\n")
 
         while true {

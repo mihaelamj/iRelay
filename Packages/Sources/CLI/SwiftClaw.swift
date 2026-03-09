@@ -1,9 +1,9 @@
 import ArgumentParser
 
 @main
-struct SwiftClaw: AsyncParsableCommand {
+struct IRelay: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "swiftclaw",
+        commandName: "irelay",
         abstract: "Apple-native AI assistant",
         version: "0.1.0",
         subcommands: [

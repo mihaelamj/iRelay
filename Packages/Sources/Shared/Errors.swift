@@ -1,6 +1,6 @@
 import Foundation
 
-public enum SwiftClawError: Error, Sendable {
+public enum IRelayError: Error, Sendable {
     // Gateway
     case connectionFailed(String)
     case authenticationFailed(String)
@@ -52,7 +52,7 @@ public enum SwiftClawError: Error, Sendable {
     case platformUnsupported(feature: String)
 }
 
-extension SwiftClawError: LocalizedError {
+extension IRelayError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .connectionFailed(let msg): "Connection failed: \(msg)"

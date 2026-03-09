@@ -212,7 +212,7 @@ final class IMessageChannelTests: XCTestCase {
     // MARK: - ChatDBReader Cursor Tests
 
     func testCursorPersistence() throws {
-        let tempDir = NSTemporaryDirectory() + "swiftclaw-test-\(UUID().uuidString)"
+        let tempDir = NSTemporaryDirectory() + "irelay-test-\(UUID().uuidString)"
         let cursorPath = tempDir + "/cursor.txt"
         defer { try? FileManager.default.removeItem(atPath: tempDir) }
 

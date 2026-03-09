@@ -31,7 +31,7 @@ struct AgentBridgeCommand: AsyncParsableCommand {
         setbuf(stdout, nil)
         Log.bootstrap(level: .info)
 
-        print("=== SwiftClaw Agent Bridge ===")
+        print("=== iRelay Agent Bridge ===")
         print("Default agent: \(agent)")
         print("Working dir: \(workDir)")
         if let model { print("Model: \(model)") }
@@ -177,18 +177,18 @@ private func runAgent(
                 let inputs = attachmentPaths.map { "-i '\($0.path)'" }.joined(separator: " ")
                 if !inputs.isEmpty { cmd += " \(inputs)" }
                 shellCommand = """
-                    cd '\(workDir)' && \(cmd) <<'SWIFTCLAW_PROMPT'
+                    cd '\(workDir)' && \(cmd) <<'IRELAY_PROMPT'
                     \(prompt)
-                    SWIFTCLAW_PROMPT
+                    IRELAY_PROMPT
                     """
             default:
                 // claude -p "<prompt>" --dangerously-skip-permissions
                 var cmd = "claude -p"
                 if let model { cmd += " --model '\(model)'" }
                 shellCommand = """
-                    cd '\(workDir)' && \(cmd) --dangerously-skip-permissions <<'SWIFTCLAW_PROMPT'
+                    cd '\(workDir)' && \(cmd) --dangerously-skip-permissions <<'IRELAY_PROMPT'
                     \(prompt)
-                    SWIFTCLAW_PROMPT
+                    IRELAY_PROMPT
                     """
             }
             process.arguments = ["-c", shellCommand]
@@ -301,7 +301,7 @@ private func extractContent(from content: MessageContent) -> (text: String, atta
 
 private func saveAttachment(data: Data, name: String) -> URL? {
     let dir = URL(fileURLWithPath: NSHomeDirectory())
-        .appendingPathComponent(".swiftclaw/bridge-attachments")
+        .appendingPathComponent(".irelay/bridge-attachments")
     try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
 
     let uuid = UUID().uuidString.prefix(8)

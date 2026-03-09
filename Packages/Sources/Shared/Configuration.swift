@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SwiftClawConfig: Codable, Sendable {
+public struct IRelayConfig: Codable, Sendable {
     public var gateway: GatewayConfig
     public var agents: AgentsConfig
     public var channels: ChannelsConfig
@@ -121,13 +121,13 @@ public struct ProviderEntry: Codable, Sendable {
 
 // MARK: - Load / Save
 
-extension SwiftClawConfig {
-    public static func load(from url: URL = ClawPaths.configFile) throws -> SwiftClawConfig {
+extension IRelayConfig {
+    public static func load(from url: URL = ClawPaths.configFile) throws -> IRelayConfig {
         guard FileManager.default.fileExists(atPath: url.path) else {
-            return SwiftClawConfig()
+            return IRelayConfig()
         }
         let data = try Data(contentsOf: url)
-        return try JSONDecoder().decode(SwiftClawConfig.self, from: data)
+        return try JSONDecoder().decode(IRelayConfig.self, from: data)
     }
 
     public func save(to url: URL = ClawPaths.configFile) throws {

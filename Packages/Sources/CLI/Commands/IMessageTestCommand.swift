@@ -25,14 +25,12 @@ struct IMessageTestCommand: AsyncParsableCommand {
     var receiveOnly: Bool = false
 
     @Option(name: .long, help: "Custom message for send-only mode")
-    var message: String = "SwiftClaw test — if you see this, sending works!"
+    var message: String = "iRelay test — if you see this, sending works!"
 
     func run() async throws {
         setbuf(stdout, nil)
         Log.bootstrap(level: .info)
-        let logger = Log.cli
-
-        print("=== SwiftClaw iMessage Test ===")
+        print("=== iRelay iMessage Test ===")
         print()
 
         // ---- Send-only mode (skip channel start to avoid advancing cursor) ----

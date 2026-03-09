@@ -57,7 +57,7 @@ public actor IMessageChannel: Channel {
         // Verify Messages.app is accessible
         guard try await runAppleScript("tell application \"Messages\" to return name") != nil else {
             status = .error("Messages.app not accessible")
-            throw SwiftClawError.channelNotFound("Messages.app not accessible")
+            throw IRelayError.channelNotFound("Messages.app not accessible")
         }
 
         // Initialize chat.db reader
@@ -85,7 +85,7 @@ public actor IMessageChannel: Channel {
         startPolling()
         logger.info("iMessage channel connected")
         #else
-        throw SwiftClawError.platformUnsupported(feature: "iMessage requires macOS")
+        throw IRelayError.platformUnsupported(feature: "iMessage requires macOS")
         #endif
     }
 
@@ -101,7 +101,7 @@ public actor IMessageChannel: Channel {
         try IMessageSender.send(content: message.content, to: message.recipientID)
         logger.debug("Sent iMessage to \(message.recipientID)")
         #else
-        throw SwiftClawError.platformUnsupported(feature: "iMessage requires macOS")
+        throw IRelayError.platformUnsupported(feature: "iMessage requires macOS")
         #endif
     }
 

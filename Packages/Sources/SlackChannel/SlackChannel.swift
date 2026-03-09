@@ -54,7 +54,7 @@ public actor SlackChannel: Channel {
         let auth: SlackResponse<AuthTest> = try await client.request(path: "/auth.test", method: .post)
         guard auth.ok else {
             status = .error("Auth failed")
-            throw SwiftClawError.channelNotFound("Slack auth failed: \(auth.error ?? "unknown")")
+            throw IRelayError.channelNotFound("Slack auth failed: \(auth.error ?? "unknown")")
         }
 
         logger.info("Slack bot: \(auth.data?.user ?? "unknown") in \(auth.data?.team ?? "unknown")")
@@ -68,7 +68,7 @@ public actor SlackChannel: Channel {
 
     public func send(_ message: OutboundMessage) async throws {
         guard let text = message.content.textValue else {
-            throw SwiftClawError.channelSendFailed(channelID: id, reason: "Only text supported")
+            throw IRelayError.channelSendFailed(channelID: id, reason: "Only text supported")
         }
 
         let payload = PostMessage(channel: message.recipientID, text: text, thread_ts: message.replyTo)
@@ -79,7 +79,7 @@ public actor SlackChannel: Channel {
         )
 
         guard response.ok else {
-            throw SwiftClawError.channelSendFailed(channelID: id, reason: response.error ?? "unknown")
+            throw IRelayError.channelSendFailed(channelID: id, reason: response.error ?? "unknown")
         }
         logger.debug("Slack message sent to \(message.recipientID)")
     }
