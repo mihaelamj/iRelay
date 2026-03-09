@@ -15,6 +15,9 @@ struct AgentBridgeCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Working directory for spawned agents")
     var workDir: String = FileManager.default.currentDirectoryPath
 
+    @Option(name: .long, help: "Agent: claude or codex")
+    var agent: String = "claude"
+
     @Option(name: .long, help: "Model override (e.g. claude-sonnet-4-5-20250514)")
     var model: String?
 
@@ -29,8 +32,13 @@ struct AgentBridgeCommand: AsyncParsableCommand {
         Log.bootstrap(level: .info)
 
         print("=== SwiftClaw Agent Bridge ===")
+        print("Default agent: \(agent)")
         print("Working dir: \(workDir)")
         if let model { print("Model: \(model)") }
+
+        let claudeOK = isCommandAvailable("claude")
+        let codexOK = isCommandAvailable("codex")
+        print("Agents: claude \(claudeOK ? "✓" : "✗")  codex \(codexOK ? "✓" : "✗")")
         print()
 
         // ---- Check Full Disk Access ----
@@ -48,11 +56,14 @@ struct AgentBridgeCommand: AsyncParsableCommand {
             let sender = inbound.senderID
 
             // Extract text and save any attachments to disk
-            let (text, attachmentPaths) = extractContent(from: inbound.content)
-            guard !text.isEmpty || !attachmentPaths.isEmpty else { return }
+            let (rawText, attachmentPaths) = extractContent(from: inbound.content)
+            guard !rawText.isEmpty || !attachmentPaths.isEmpty else { return }
+
+            // Route agent based on message prefix: "codex: ..." or "@codex ..."
+            let (selectedAgent, text) = parseAgentPrefix(rawText, defaultAgent: agent)
 
             print()
-            print("[\(formatTime(Date()))] PROMPT from \(sender): \(text)")
+            print("[\(formatTime(Date()))] [\(selectedAgent)] PROMPT from \(sender): \(text)")
             if !attachmentPaths.isEmpty {
                 print("  Attachments: \(attachmentPaths.map(\.lastPathComponent))")
             }
@@ -63,18 +74,24 @@ struct AgentBridgeCommand: AsyncParsableCommand {
                 sessionID: "bridge",
                 channelID: "imessage",
                 recipientID: sender,
-                content: .text("⚡ Running...")
+                content: .text("⚡ \(selectedAgent): Running...")
             ))
 
-            // Build prompt with attachment paths
+            // Build prompt — for Claude, include file paths in text; for Codex, use -i flags
             var fullPrompt = text
-            if !attachmentPaths.isEmpty {
+            if selectedAgent != "codex", !attachmentPaths.isEmpty {
                 let paths = attachmentPaths.map(\.path).joined(separator: "\n")
                 fullPrompt += "\n\nAttached files:\n\(paths)"
             }
 
-            // Run claude via shell — simple and reliable
-            let result = await runClaude(prompt: fullPrompt, workDir: workDir, model: model)
+            // Run agent via shell — simple and reliable
+            let result = await runAgent(
+                prompt: fullPrompt,
+                workDir: workDir,
+                agent: selectedAgent,
+                model: model,
+                attachmentPaths: attachmentPaths
+            )
 
             print("  [result] \(result.prefix(100))...")
             fflush(stdout)
@@ -118,24 +135,62 @@ struct AgentBridgeCommand: AsyncParsableCommand {
     }
 }
 
-/// Run `claude -p` as a shell subprocess and return the plain text result.
-private func runClaude(prompt: String, workDir: String, model: String?) async -> String {
-    await withCheckedContinuation { continuation in
+/// Check if a CLI tool is available on the system.
+private func isCommandAvailable(_ name: String) -> Bool {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
+    process.arguments = [name]
+    process.standardOutput = Pipe()
+    process.standardError = Pipe()
+    do {
+        try process.run()
+        process.waitUntilExit()
+        return process.terminationStatus == 0
+    } catch {
+        return false
+    }
+}
+
+/// Run an agent CLI as a shell subprocess and return the plain text result.
+private func runAgent(
+    prompt: String,
+    workDir: String,
+    agent: String,
+    model: String?,
+    attachmentPaths: [URL]
+) async -> String {
+    let cliName = agent == "codex" ? "codex" : "claude"
+    guard isCommandAvailable(cliName) else {
+        return "❌ \(cliName) is not installed. Install it first to use the \(agent) agent."
+    }
+
+    return await withCheckedContinuation { continuation in
         DispatchQueue.global().async {
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/bin/zsh")
 
-            // Build the claude command
-            var cmd = "claude -p"
-            if let model {
-                cmd += " --model '\(model)'"
+            let shellCommand: String
+            switch agent {
+            case "codex":
+                // codex exec "<prompt>" --full-auto [-i file1 -i file2]
+                var cmd = "codex exec --full-auto"
+                let inputs = attachmentPaths.map { "-i '\($0.path)'" }.joined(separator: " ")
+                if !inputs.isEmpty { cmd += " \(inputs)" }
+                shellCommand = """
+                    cd '\(workDir)' && \(cmd) <<'SWIFTCLAW_PROMPT'
+                    \(prompt)
+                    SWIFTCLAW_PROMPT
+                    """
+            default:
+                // claude -p "<prompt>" --dangerously-skip-permissions
+                var cmd = "claude -p"
+                if let model { cmd += " --model '\(model)'" }
+                shellCommand = """
+                    cd '\(workDir)' && \(cmd) --dangerously-skip-permissions <<'SWIFTCLAW_PROMPT'
+                    \(prompt)
+                    SWIFTCLAW_PROMPT
+                    """
             }
-            // Use heredoc to safely pass the prompt without shell escaping issues
-            let shellCommand = """
-                cd '\(workDir)' && \(cmd) --dangerously-skip-permissions <<'SWIFTCLAW_PROMPT'
-                \(prompt)
-                SWIFTCLAW_PROMPT
-                """
             process.arguments = ["-c", shellCommand]
 
             // Strip Claude Code env vars to avoid nesting detection
@@ -176,6 +231,29 @@ private func formatTime(_ date: Date) -> String {
     let fmt = DateFormatter()
     fmt.dateFormat = "HH:mm:ss"
     return fmt.string(from: date)
+}
+
+/// Parse agent prefix from message. Supports "codex: ...", "@codex ...", "claude: ...", "@claude ...".
+private func parseAgentPrefix(_ text: String, defaultAgent: String) -> (agent: String, prompt: String) {
+    let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    let lower = trimmed.lowercased()
+
+    let prefixes: [(pattern: String, agent: String)] = [
+        ("codex:", "codex"),
+        ("@codex ", "codex"),
+        ("claude:", "claude"),
+        ("@claude ", "claude"),
+    ]
+
+    for (pattern, agent) in prefixes {
+        if lower.hasPrefix(pattern) {
+            let prompt = String(trimmed.dropFirst(pattern.count))
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            return (agent, prompt)
+        }
+    }
+
+    return (defaultAgent, trimmed)
 }
 
 /// Extract text and save attachments to disk, returning their file URLs.
