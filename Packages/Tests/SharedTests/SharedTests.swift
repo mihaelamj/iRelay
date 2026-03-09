@@ -87,9 +87,9 @@ final class SharedTests: XCTestCase {
     // MARK: - ChatMessage
 
     func testChatMessageCreation() {
-        let msg = ChatMessage(role: .user, content: "Hello AI", metadata: ["key": "val"])
+        let msg = ChatMessage(role: .user, text: "Hello AI", metadata: ["key": "val"])
         XCTAssertEqual(msg.role, .user)
-        XCTAssertEqual(msg.content, "Hello AI")
+        XCTAssertEqual(msg.textContent, "Hello AI")
         XCTAssertEqual(msg.metadata?["key"], "val")
     }
 
@@ -101,17 +101,17 @@ final class SharedTests: XCTestCase {
     }
 
     func testChatMessageCodable() throws {
-        let original = ChatMessage(role: .assistant, content: "Response",
+        let original = ChatMessage(role: .assistant, text: "Response",
                                    timestamp: Date(timeIntervalSince1970: 3000), metadata: ["s": "t"])
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(ChatMessage.self, from: data)
         XCTAssertEqual(decoded.role, .assistant)
-        XCTAssertEqual(decoded.content, "Response")
+        XCTAssertEqual(decoded.textContent, "Response")
         XCTAssertEqual(decoded.metadata?["s"], "t")
     }
 
     func testChatMessageCodableWithoutMetadata() throws {
-        let original = ChatMessage(role: .system, content: "Prompt")
+        let original = ChatMessage(role: .system, text: "Prompt")
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(ChatMessage.self, from: data)
         XCTAssertEqual(decoded.role, .system)
@@ -274,5 +274,245 @@ final class SharedTests: XCTestCase {
             .appendingPathComponent("nonexistent-\(UUID().uuidString).json")
         let config = try SwiftClawConfig.load(from: url)
         XCTAssertEqual(config.gateway.port, Defaults.gatewayPort)
+    }
+
+    // MARK: - ContentBlock
+
+    func testContentBlockText() {
+        let block = ContentBlock.text("hello")
+        XCTAssertEqual(block.textValue, "hello")
+    }
+
+    func testContentBlockImageHasNoTextValue() {
+        let source = ImageSource(url: "https://example.com/img.png", mediaType: "image/png")
+        let block = ContentBlock.image(source)
+        XCTAssertNil(block.textValue)
+    }
+
+    func testContentBlockToolUse() {
+        let block = ContentBlock.toolUse(id: "t1", name: "read_file", input: "{\"path\":\"/tmp\"}")
+        if case .toolUse(let id, let name, let input) = block {
+            XCTAssertEqual(id, "t1")
+            XCTAssertEqual(name, "read_file")
+            XCTAssertTrue(input.contains("/tmp"))
+        } else { XCTFail("Expected .toolUse") }
+    }
+
+    func testContentBlockToolResult() {
+        let block = ContentBlock.toolResult(toolUseID: "t1", content: "done", isError: false)
+        if case .toolResult(let id, let content, let isError) = block {
+            XCTAssertEqual(id, "t1")
+            XCTAssertEqual(content, "done")
+            XCTAssertFalse(isError)
+        } else { XCTFail("Expected .toolResult") }
+    }
+
+    func testContentBlockEquatable() {
+        XCTAssertEqual(ContentBlock.text("a"), ContentBlock.text("a"))
+        XCTAssertNotEqual(ContentBlock.text("a"), ContentBlock.text("b"))
+    }
+
+    func testContentBlockTextCodable() throws {
+        let original = ContentBlock.text("Hello world")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ContentBlock.self, from: data)
+        XCTAssertEqual(decoded, original)
+    }
+
+    func testContentBlockImageCodable() throws {
+        let source = ImageSource(data: Data([0x89, 0x50]), mediaType: "image/png")
+        let original = ContentBlock.image(source)
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ContentBlock.self, from: data)
+        XCTAssertEqual(decoded, original)
+    }
+
+    func testContentBlockToolUseCodable() throws {
+        let original = ContentBlock.toolUse(id: "tu1", name: "bash", input: "{}")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ContentBlock.self, from: data)
+        XCTAssertEqual(decoded, original)
+    }
+
+    func testContentBlockToolResultCodable() throws {
+        let original = ContentBlock.toolResult(toolUseID: "tu1", content: "error", isError: true)
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ContentBlock.self, from: data)
+        XCTAssertEqual(decoded, original)
+    }
+
+    func testContentBlockUnknownTypeDecodesToText() throws {
+        let json = #"{"type":"unknown","text":"fallback"}"#
+        let decoded = try JSONDecoder().decode(ContentBlock.self, from: json.data(using: .utf8)!)
+        XCTAssertEqual(decoded, .text("fallback"))
+    }
+
+    // MARK: - ImageSource
+
+    func testImageSourceBase64Init() {
+        let raw = Data([0x89, 0x50, 0x4E, 0x47])
+        let source = ImageSource(data: raw, mediaType: "image/png")
+        XCTAssertEqual(source.type, .base64)
+        XCTAssertEqual(source.mediaType, "image/png")
+        XCTAssertEqual(source.data, raw.base64EncodedString())
+    }
+
+    func testImageSourceURLInit() {
+        let source = ImageSource(url: "https://example.com/img.jpg", mediaType: "image/jpeg")
+        XCTAssertEqual(source.type, .url)
+        XCTAssertEqual(source.mediaType, "image/jpeg")
+        XCTAssertEqual(source.data, "https://example.com/img.jpg")
+    }
+
+    func testImageSourceCodable() throws {
+        let original = ImageSource(url: "https://example.com/a.png", mediaType: "image/png")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ImageSource.self, from: data)
+        XCTAssertEqual(decoded, original)
+    }
+
+    func testImageSourceTypeRawValues() {
+        XCTAssertEqual(ImageSourceType.base64.rawValue, "base64")
+        XCTAssertEqual(ImageSourceType.url.rawValue, "url")
+    }
+
+    // MARK: - MessageContent (expanded)
+
+    func testMessageContentVideo() {
+        let content = MessageContent.video(Data([0x00]), mimeType: "video/mp4")
+        XCTAssertTrue(content.isMedia)
+        XCTAssertFalse(content.isText)
+        XCTAssertNil(content.textValue)
+    }
+
+    func testMessageContentLink() {
+        let url = URL(string: "https://example.com")!
+        let content = MessageContent.link(url, title: "Example")
+        XCTAssertFalse(content.isText)
+        XCTAssertFalse(content.isMedia)
+        XCTAssertNil(content.textValue)
+    }
+
+    func testMessageContentCompound() {
+        let content = MessageContent.compound([.text("caption"), .image(Data([1]), mimeType: "image/png")])
+        XCTAssertFalse(content.isText)
+        XCTAssertFalse(content.isMedia)
+    }
+
+    func testMessageContentIsMedia() {
+        XCTAssertTrue(MessageContent.image(Data(), mimeType: "image/png").isMedia)
+        XCTAssertTrue(MessageContent.video(Data(), mimeType: "video/mp4").isMedia)
+        XCTAssertTrue(MessageContent.audio(Data(), mimeType: "audio/mp3").isMedia)
+        XCTAssertTrue(MessageContent.file(Data(), filename: "f", mimeType: "text/plain").isMedia)
+        XCTAssertFalse(MessageContent.text("hi").isMedia)
+        XCTAssertFalse(MessageContent.link(URL(string: "https://x.com")!, title: nil).isMedia)
+        XCTAssertFalse(MessageContent.location(latitude: 0, longitude: 0).isMedia)
+    }
+
+    func testTextFallbackText() {
+        XCTAssertEqual(MessageContent.text("hello").textFallback, "hello")
+    }
+
+    func testTextFallbackImage() {
+        let fb = MessageContent.image(Data(), mimeType: "image/png").textFallback
+        XCTAssertEqual(fb, "[Image: image/png]")
+    }
+
+    func testTextFallbackVideo() {
+        let fb = MessageContent.video(Data(), mimeType: "video/mp4").textFallback
+        XCTAssertEqual(fb, "[Video: video/mp4]")
+    }
+
+    func testTextFallbackAudio() {
+        let fb = MessageContent.audio(Data(), mimeType: "audio/mp3").textFallback
+        XCTAssertEqual(fb, "[Audio: audio/mp3]")
+    }
+
+    func testTextFallbackFile() {
+        let fb = MessageContent.file(Data(), filename: "doc.pdf", mimeType: "application/pdf").textFallback
+        XCTAssertEqual(fb, "[File: doc.pdf]")
+    }
+
+    func testTextFallbackLinkWithTitle() {
+        let url = URL(string: "https://example.com")!
+        let fb = MessageContent.link(url, title: "Example").textFallback
+        XCTAssertEqual(fb, "Example: https://example.com")
+    }
+
+    func testTextFallbackLinkWithoutTitle() {
+        let url = URL(string: "https://example.com")!
+        let fb = MessageContent.link(url, title: nil).textFallback
+        XCTAssertEqual(fb, "https://example.com")
+    }
+
+    func testTextFallbackLocation() {
+        let fb = MessageContent.location(latitude: 45.8, longitude: 15.97).textFallback
+        XCTAssertTrue(fb.contains("45.8"))
+        XCTAssertTrue(fb.contains("15.97"))
+    }
+
+    func testTextFallbackCompound() {
+        let content = MessageContent.compound([
+            .text("Look at this:"),
+            .image(Data(), mimeType: "image/jpeg"),
+        ])
+        let fb = content.textFallback
+        XCTAssertTrue(fb.contains("Look at this:"))
+        XCTAssertTrue(fb.contains("[Image: image/jpeg]"))
+    }
+
+    // MARK: - ChatMessage (multimodal)
+
+    func testChatMessageMultimodalContent() {
+        let source = ImageSource(url: "https://example.com/img.png", mediaType: "image/png")
+        let msg = ChatMessage(role: .user, content: [
+            .text("What is this?"),
+            .image(source),
+        ])
+        XCTAssertEqual(msg.content.count, 2)
+        XCTAssertEqual(msg.textContent, "What is this?")
+    }
+
+    func testChatMessageTextConvenienceInit() {
+        let msg = ChatMessage(role: .assistant, text: "Hello")
+        XCTAssertEqual(msg.content.count, 1)
+        XCTAssertEqual(msg.content.first, .text("Hello"))
+        XCTAssertEqual(msg.textContent, "Hello")
+    }
+
+    func testChatMessageTextContentConcatenation() {
+        let msg = ChatMessage(role: .user, content: [
+            .text("Part 1"),
+            .text(" Part 2"),
+        ])
+        XCTAssertEqual(msg.textContent, "Part 1 Part 2")
+    }
+
+    func testChatMessageMultimodalCodable() throws {
+        let source = ImageSource(data: Data([0xFF, 0xD8]), mediaType: "image/jpeg")
+        let original = ChatMessage(role: .user, content: [
+            .text("Describe this image"),
+            .image(source),
+        ], timestamp: Date(timeIntervalSince1970: 5000))
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ChatMessage.self, from: data)
+        XCTAssertEqual(decoded.content.count, 2)
+        XCTAssertEqual(decoded.textContent, "Describe this image")
+        XCTAssertEqual(decoded.role, .user)
+    }
+
+    // MARK: - OutboundMessage.with(content:)
+
+    func testOutboundMessageWithContent() {
+        let original = OutboundMessage(
+            sessionID: "s1", channelID: "imsg", recipientID: "u1",
+            content: .text("original"), replyTo: "msg-1"
+        )
+        let modified = original.with(content: .image(Data([1]), mimeType: "image/png"))
+        XCTAssertEqual(modified.sessionID, "s1")
+        XCTAssertEqual(modified.channelID, "imsg")
+        XCTAssertEqual(modified.recipientID, "u1")
+        XCTAssertEqual(modified.replyTo, "msg-1")
+        XCTAssertTrue(modified.content.isMedia)
     }
 }

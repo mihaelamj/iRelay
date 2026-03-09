@@ -85,7 +85,7 @@ public actor SessionManager {
             return records.map { record in
                 ChatMessage(
                     role: ChatRole(rawValue: record.role) ?? .user,
-                    content: record.content,
+                    text: record.content,
                     timestamp: record.timestamp
                 )
             }

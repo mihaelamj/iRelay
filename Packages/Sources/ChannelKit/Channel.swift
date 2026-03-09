@@ -1,12 +1,94 @@
 import Foundation
 import Shared
 
+// MARK: - Channel Capabilities
+
+public struct ChannelCapabilities: OptionSet, Sendable {
+    public let rawValue: UInt
+    public init(rawValue: UInt) { self.rawValue = rawValue }
+
+    public static let text         = ChannelCapabilities(rawValue: 1 << 0)
+    public static let images       = ChannelCapabilities(rawValue: 1 << 1)
+    public static let video        = ChannelCapabilities(rawValue: 1 << 2)
+    public static let audio        = ChannelCapabilities(rawValue: 1 << 3)
+    public static let files        = ChannelCapabilities(rawValue: 1 << 4)
+    public static let links        = ChannelCapabilities(rawValue: 1 << 5)
+    public static let reactions    = ChannelCapabilities(rawValue: 1 << 6)
+    public static let typing       = ChannelCapabilities(rawValue: 1 << 7)
+    public static let readReceipts = ChannelCapabilities(rawValue: 1 << 8)
+    public static let threads      = ChannelCapabilities(rawValue: 1 << 9)
+
+    public static let textOnly: ChannelCapabilities = [.text]
+    public static let multimedia: ChannelCapabilities = [.text, .images, .video, .audio, .files, .links]
+    public static let full: ChannelCapabilities = [.text, .images, .video, .audio, .files, .links, .reactions, .typing]
+}
+
+// MARK: - Channel Limits
+
+public struct ChannelLimits: Sendable {
+    public let maxTextLength: Int
+    public let maxImageSize: Int?
+    public let maxVideoSize: Int?
+    public let maxFileSize: Int?
+    public let supportedImageFormats: Set<String>
+    public let supportedVideoFormats: Set<String>
+
+    public init(
+        maxTextLength: Int,
+        maxImageSize: Int? = nil,
+        maxVideoSize: Int? = nil,
+        maxFileSize: Int? = nil,
+        supportedImageFormats: Set<String> = ["image/jpeg", "image/png", "image/gif"],
+        supportedVideoFormats: Set<String> = ["video/mp4"]
+    ) {
+        self.maxTextLength = maxTextLength
+        self.maxImageSize = maxImageSize
+        self.maxVideoSize = maxVideoSize
+        self.maxFileSize = maxFileSize
+        self.supportedImageFormats = supportedImageFormats
+        self.supportedVideoFormats = supportedVideoFormats
+    }
+
+    public static let imessage = ChannelLimits(
+        maxTextLength: Defaults.TextLimits.iMessage,
+        maxImageSize: 100_000_000,
+        maxVideoSize: 100_000_000,
+        maxFileSize: 100_000_000,
+        supportedImageFormats: ["image/jpeg", "image/png", "image/gif", "image/heic"],
+        supportedVideoFormats: ["video/mp4", "video/quicktime"]
+    )
+
+    public static let whatsapp = ChannelLimits(
+        maxTextLength: Defaults.TextLimits.whatsApp,
+        maxImageSize: 5_000_000,
+        maxVideoSize: 16_000_000,
+        maxFileSize: 100_000_000,
+        supportedImageFormats: ["image/jpeg", "image/png"],
+        supportedVideoFormats: ["video/mp4", "video/3gpp"]
+    )
+
+    public static let telegram = ChannelLimits(
+        maxTextLength: Defaults.TextLimits.telegram,
+        maxImageSize: 10_000_000,
+        maxVideoSize: 50_000_000,
+        maxFileSize: 50_000_000
+    )
+
+    public static let `default` = ChannelLimits(maxTextLength: Defaults.TextLimits.default)
+}
+
 // MARK: - Channel Protocol
 
 public protocol Channel: Actor {
     var id: String { get }
     var displayName: String { get }
     var status: ChannelStatus { get }
+
+    /// What this channel can send/receive.
+    var capabilities: ChannelCapabilities { get }
+
+    /// Size and format constraints.
+    var limits: ChannelLimits { get }
 
     /// Start listening for inbound messages.
     func start() async throws
@@ -19,15 +101,15 @@ public protocol Channel: Actor {
 
     /// Register a handler for inbound messages.
     func onMessage(_ handler: @escaping @Sendable (InboundMessage) async -> Void)
-
-    /// Maximum text length this channel supports (for chunking).
-    var maxTextLength: Int { get }
 }
 
 // MARK: - Default implementations
 
 extension Channel {
-    public var maxTextLength: Int { Defaults.TextLimits.default }
+    public var capabilities: ChannelCapabilities { .textOnly }
+    public var limits: ChannelLimits { .default }
+    /// Deprecated: use limits.maxTextLength instead.
+    public var maxTextLength: Int { limits.maxTextLength }
 }
 
 // MARK: - Channel Status

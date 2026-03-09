@@ -39,8 +39,8 @@ final class SessionsTests: XCTestCase {
     func testAppendAndHistory() async throws {
         let mgr = try makeManager()
         _ = try await mgr.session(for: "s1", channelID: "tg", peerID: "u1")
-        let msg1 = ChatMessage(role: .user, content: "Hello")
-        let msg2 = ChatMessage(role: .assistant, content: "Hi there")
+        let msg1 = ChatMessage(role: .user, text: "Hello")
+        let msg2 = ChatMessage(role: .assistant, text: "Hi there")
         try await mgr.appendMessage(msg1, to: "s1")
         try await mgr.appendMessage(msg2, to: "s1")
         let history = try await mgr.history(for: "s1")
@@ -53,7 +53,7 @@ final class SessionsTests: XCTestCase {
         let mgr = try makeManager()
         _ = try await mgr.session(for: "s1", channelID: "tg", peerID: "u1")
         for i in 0..<10 {
-            try await mgr.appendMessage(ChatMessage(role: .user, content: "msg-\(i)"), to: "s1")
+            try await mgr.appendMessage(ChatMessage(role: .user, text: "msg-\(i)"), to: "s1")
         }
         let history = try await mgr.history(for: "s1", limit: 3)
         XCTAssertEqual(history.count, 3)

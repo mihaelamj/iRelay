@@ -84,7 +84,7 @@ public actor AgentRouter {
 
                     // Build messages: history + new user message
                     var messages = history
-                    messages.append(ChatMessage(role: .user, content: message))
+                    messages.append(ChatMessage(role: .user, text: message))
 
                     let stream = provider.complete(messages, model: modelID, options: options)
 

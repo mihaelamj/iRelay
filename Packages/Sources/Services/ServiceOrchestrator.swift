@@ -62,7 +62,7 @@ public actor ServiceOrchestrator {
             )
 
             // 2. Record inbound message
-            let userMessage = ChatMessage(role: .user, content: message.content.textValue ?? "")
+            let userMessage = ChatMessage(role: .user, text: message.content.textFallback)
             try await sessionManager.appendMessage(userMessage, to: session.id)
 
             // 3. Load history
@@ -70,7 +70,7 @@ public actor ServiceOrchestrator {
 
             // 4. Route to agent and collect streamed response
             let stream = await agentRouter.route(
-                message: message.content.textValue ?? "",
+                message: message.content.textFallback,
                 session: session,
                 history: history
             )
@@ -88,7 +88,7 @@ public actor ServiceOrchestrator {
             }
 
             // 5. Record assistant response
-            let assistantMessage = ChatMessage(role: .assistant, content: responseText)
+            let assistantMessage = ChatMessage(role: .assistant, text: responseText)
             try await sessionManager.appendMessage(assistantMessage, to: session.id)
 
             // 6. Deliver response back through the channel

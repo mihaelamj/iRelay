@@ -58,11 +58,11 @@ public struct ClaudeProvider: LLMProvider, Sendable {
             let task = Task {
                 do {
                     let apiMessages = messages.filter { $0.role != .system }.map { msg in
-                        APIMessage(role: msg.role == .assistant ? "assistant" : "user", content: msg.content)
+                        APIMessage(role: msg.role == .assistant ? "assistant" : "user", content: msg.textContent)
                     }
 
                     let systemPrompt = options.systemPrompt
-                        ?? messages.first(where: { $0.role == .system })?.content
+                        ?? messages.first(where: { $0.role == .system })?.textContent
 
                     let body = MessagesRequest(
                         model: model,

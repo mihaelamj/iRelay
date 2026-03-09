@@ -47,7 +47,7 @@ public struct OpenAIProvider: LLMProvider, Sendable {
             let task = Task {
                 do {
                     let apiMessages = messages.map { msg in
-                        OAIMessage(role: msg.role.rawValue, content: msg.content)
+                        OAIMessage(role: msg.role.rawValue, content: msg.textContent)
                     }
 
                     let body = ChatCompletionRequest(

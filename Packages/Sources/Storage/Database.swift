@@ -98,7 +98,7 @@ public struct MessageRecord: Codable, Sendable, FetchableRecord, PersistableReco
         self.id = nil
         self.sessionID = sessionID
         self.role = message.role.rawValue
-        self.content = message.content
+        self.content = message.textContent
         self.timestamp = message.timestamp
         if let meta = message.metadata {
             self.metadata = try? String(data: JSONEncoder().encode(meta), encoding: .utf8)

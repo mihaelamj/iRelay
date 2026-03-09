@@ -36,7 +36,7 @@ final class StorageTests: XCTestCase {
 
     func testMessageRecordRoundtrip() throws {
         let db = try makeTempDB()
-        let msg = ChatMessage(role: .user, content: "Hello",
+        let msg = ChatMessage(role: .user, text: "Hello",
                               timestamp: Date(timeIntervalSince1970: 3000),
                               metadata: ["key": "val"])
         let record = MessageRecord(sessionID: "sess-1", message: msg)
@@ -53,7 +53,7 @@ final class StorageTests: XCTestCase {
     func testMultipleMessages() throws {
         let db = try makeTempDB()
         for i in 0..<5 {
-            let msg = ChatMessage(role: i % 2 == 0 ? .user : .assistant, content: "msg-\(i)")
+            let msg = ChatMessage(role: i % 2 == 0 ? .user : .assistant, text: "msg-\(i)")
             let record = MessageRecord(sessionID: "sess-1", message: msg)
             try db.write { db in try record.insert(db) }
         }
@@ -71,14 +71,14 @@ final class StorageTests: XCTestCase {
     }
 
     func testMessageRecordMetadataEncoding() {
-        let msg = ChatMessage(role: .assistant, content: "Hi", metadata: ["a": "b"])
+        let msg = ChatMessage(role: .assistant, text: "Hi", metadata: ["a": "b"])
         let record = MessageRecord(sessionID: "s1", message: msg)
         XCTAssertNotNil(record.metadata)
         XCTAssertTrue(record.metadata?.contains("\"a\"") ?? false)
     }
 
     func testMessageRecordNilMetadata() {
-        let msg = ChatMessage(role: .user, content: "Hi")
+        let msg = ChatMessage(role: .user, text: "Hi")
         let record = MessageRecord(sessionID: "s1", message: msg)
         XCTAssertNil(record.metadata)
     }

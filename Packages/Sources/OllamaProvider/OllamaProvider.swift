@@ -47,7 +47,7 @@ public struct OllamaProvider: LLMProvider, Sendable {
             let task = Task {
                 do {
                     let apiMessages = messages.map { msg in
-                        OllamaMessage(role: msg.role.rawValue, content: msg.content)
+                        OllamaMessage(role: msg.role.rawValue, content: msg.textContent)
                     }
 
                     let body = OllamaChatRequest(

@@ -45,17 +45,28 @@ public struct OutboundMessage: Sendable {
         self.content = content
         self.replyTo = replyTo
     }
+
+    /// Create a copy with different content (for splitting compound messages).
+    public func with(content newContent: MessageContent) -> OutboundMessage {
+        OutboundMessage(
+            sessionID: sessionID,
+            channelID: channelID,
+            recipientID: recipientID,
+            content: newContent,
+            replyTo: replyTo
+        )
+    }
 }
 
 public struct ChatMessage: Sendable, Codable {
     public let role: ChatRole
-    public let content: String
+    public let content: [ContentBlock]
     public let timestamp: Date
     public let metadata: [String: String]?
 
     public init(
         role: ChatRole,
-        content: String,
+        content: [ContentBlock],
         timestamp: Date = .now,
         metadata: [String: String]? = nil
     ) {
@@ -63,6 +74,24 @@ public struct ChatMessage: Sendable, Codable {
         self.content = content
         self.timestamp = timestamp
         self.metadata = metadata
+    }
+
+    /// Convenience: create a text-only message.
+    public init(
+        role: ChatRole,
+        text: String,
+        timestamp: Date = .now,
+        metadata: [String: String]? = nil
+    ) {
+        self.role = role
+        self.content = [.text(text)]
+        self.timestamp = timestamp
+        self.metadata = metadata
+    }
+
+    /// The concatenated text from all text blocks.
+    public var textContent: String {
+        content.compactMap(\.textValue).joined()
     }
 }
 

@@ -48,12 +48,12 @@ public struct GeminiProvider: LLMProvider, Sendable {
                     let contents = messages.filter { $0.role != .system }.map { msg in
                         GeminiContent(
                             role: msg.role == .assistant ? "model" : "user",
-                            parts: [.init(text: msg.content)]
+                            parts: [.init(text: msg.textContent)]
                         )
                     }
 
                     let systemInstruction: GeminiContent? = if let sys = options.systemPrompt
-                        ?? messages.first(where: { $0.role == .system })?.content {
+                        ?? messages.first(where: { $0.role == .system })?.textContent {
                         GeminiContent(role: "user", parts: [.init(text: sys)])
                     } else {
                         nil

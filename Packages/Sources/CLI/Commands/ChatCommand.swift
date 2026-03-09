@@ -70,7 +70,7 @@ struct ChatCommand: AsyncParsableCommand {
             }
             if input.lowercased() == "exit" { break }
 
-            history.append(ChatMessage(role: .user, content: input))
+            history.append(ChatMessage(role: .user, text: input))
 
             let stream = await agentRouter.invoke(
                 agent: agent,
@@ -98,7 +98,7 @@ struct ChatCommand: AsyncParsableCommand {
             }
 
             if !response.isEmpty {
-                history.append(ChatMessage(role: .assistant, content: response))
+                history.append(ChatMessage(role: .assistant, text: response))
             }
             print()
         }
