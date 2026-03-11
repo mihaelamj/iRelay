@@ -1,4 +1,4 @@
-# SwiftClaw
+# iRelay
 
 Apple-native AI assistant. Pure Swift. macOS + iOS.
 
