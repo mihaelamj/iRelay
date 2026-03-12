@@ -1,4 +1,4 @@
-# SwiftClaw Package Design
+# iRelay Package Design
 
 Maps the 12 layers from OPENCLAW-EXPLAINED.md to SPM packages. Flat hierarchy — all packages live in `Packages/Sources/`, one folder per package.
 
@@ -23,7 +23,7 @@ Maps the 12 layers from OPENCLAW-EXPLAINED.md to SPM packages. Flat hierarchy �
 |---------|---------------|
 | **Gateway** | Hummingbird WebSocket server, frame protocol, connection management, auth handshake, health endpoint |
 
-Depends on: Shared, ClawLogging, Hummingbird, HummingbirdWebSocket
+Depends on: Shared, IRelayLogging, Hummingbird, HummingbirdWebSocket
 
 ---
 
@@ -53,7 +53,7 @@ Each channel package depends on: ChannelKit, Shared, (optionally) Networking
 |---------|---------------|
 | **Sessions** | SessionManager (create/get/list/delete), session-channel-agent binding, message history management, session keys, session compaction (token-aware pruning) |
 
-Depends on: Shared, ClawLogging, Storage
+Depends on: Shared, IRelayLogging, Storage
 
 ---
 
@@ -78,7 +78,7 @@ Each provider package depends on: ProviderKit, Shared, Networking
 |---------|---------------|
 | **Agents** | AgentConfig (system prompt, model, tools), AgentRouter (route messages to agents), default agent fallback, agent CRUD |
 
-Depends on: Shared, ClawLogging, ProviderKit, Sessions
+Depends on: Shared, IRelayLogging, ProviderKit, Sessions
 
 ---
 
@@ -90,7 +90,7 @@ Depends on: Shared, ClawLogging, ProviderKit, Sessions
 |---------|---------------|
 | **Delivery** | AutoReplyDispatcher — queues outbound replies per session+channel. Chunking (per-channel text limits). Retry with backoff. Format conversion. Heartbeat for long-running responses. |
 
-Depends on: Shared, ClawLogging, ChannelKit
+Depends on: Shared, IRelayLogging, ChannelKit
 
 Why separate: Currently buried in Services. But delivery logic (chunking, retry, formatting) is complex enough to be its own package. Services orchestrates; Delivery actually ships the message out.
 
@@ -102,7 +102,7 @@ Why separate: Currently buried in Services. But delivery logic (chunking, retry,
 |---------|---------------|
 | **Storage** | DatabaseManager (open/migrate/close), versioned migrations, SessionRecord CRUD, MessageRecord CRUD, ConfigRecord key-value store |
 
-Depends on: Shared, ClawLogging, GRDB
+Depends on: Shared, IRelayLogging, GRDB
 
 ---
 
@@ -110,7 +110,7 @@ Depends on: Shared, ClawLogging, GRDB
 
 | Package | Responsibility |
 |---------|---------------|
-| **ClawSecurity** | Keychain wrapper (macOS), file-based encrypted store (Linux), store/retrieve API keys + bot tokens, secret ref resolution (env vars, file paths) |
+| **IRelaySecurity** | Keychain wrapper (macOS), file-based encrypted store (Linux), store/retrieve API keys + bot tokens, secret ref resolution (env vars, file paths) |
 
 Depends on: Shared
 
@@ -122,7 +122,7 @@ Depends on: Shared
 |---------|---------------|
 | **Memory** | Vector storage (GRDB + sqlite-vec), embedding generation (via provider), hybrid search (keyword BM25 + semantic vector), embedding cache |
 
-Depends on: Shared, ClawLogging, Storage, ProviderKit
+Depends on: Shared, IRelayLogging, Storage, ProviderKit
 
 ---
 
@@ -132,7 +132,7 @@ Depends on: Shared, ClawLogging, Storage, ProviderKit
 |---------|---------------|
 | **Scheduling** | Cron expression parser, task scheduler (async, cancellable), scheduled message sending, timer management |
 
-Depends on: Shared, ClawLogging
+Depends on: Shared, IRelayLogging
 
 ---
 
@@ -144,7 +144,7 @@ Depends on: Shared, ClawLogging
 |---------|---------------|
 | **AdminKit** | All management operations as plain functions returning plain types. Channel CRUD, provider CRUD, agent CRUD, session search/delete/export, config get/set/reset/import/export, status/health checks, doctor (find + fix config issues). Zero UI imports. |
 
-Depends on: Shared, ClawLogging, Storage, Sessions, Agents, ChannelKit, ProviderKit, Scheduling, ClawSecurity
+Depends on: Shared, IRelayLogging, Storage, Sessions, Agents, ChannelKit, ProviderKit, Scheduling, IRelaySecurity
 
 Why separate: Must be consumable by iOS app, macOS app, web UI, and CLI equally. If admin logic lives in Services or CLI, it can't be reused.
 
@@ -167,7 +167,7 @@ These don't map to a single layer but are used everywhere:
 | Package | Responsibility |
 |---------|---------------|
 | **Shared** | Foundation types — models, config types, error types, constants, platform-aware paths |
-| **ClawLogging** | Structured logging — wraps swift-log with categories |
+| **IRelayLogging** | Structured logging — wraps swift-log with categories |
 | **Networking** | HTTP client, SSE parser, WebSocket client — shared by channels + providers |
 | **TestSupport** | Test fixtures, mocks, helpers |
 
@@ -187,7 +187,7 @@ Depends on: Sessions, Agents, ChannelKit, ProviderKit, Storage, Scheduling, Deli
 
 | Package | Responsibility |
 |---------|---------------|
-| **CLI** | Main entry point — `swiftclaw` binary. Subcommands: serve, chat, config, status, doctor. Imports Services + AdminKit + all channels + all providers. |
+| **CLI** | Main entry point — `irelay` binary. Subcommands: serve, chat, config, status, doctor. Imports Services + AdminKit + all channels + all providers. |
 
 ---
 
@@ -206,7 +206,7 @@ Depends on: Sessions, Agents, ChannelKit, ProviderKit, Storage, Scheduling, Deli
 
 ```
 Foundation (5):
-  Shared, ClawLogging, ClawSecurity, Storage, Networking
+  Shared, IRelayLogging, IRelaySecurity, Storage, Networking
 
 Protocols (2):
   ChannelKit, ProviderKit
@@ -259,15 +259,15 @@ Future (1):
        │         │            │
        ├─────────┼────────────┤
        │         │            │
-  Networking  ClawSecurity  ClawLogging
+  Networking  IRelaySecurity  IRelayLogging
        │                      │
        └──────── Shared ──────┘
 
 Channel implementations → ChannelKit + Shared + Networking
 Provider implementations → ProviderKit + Shared + Networking
-Memory → Shared + ClawLogging + Storage + ProviderKit
-Voice → Shared + ClawLogging (macOS only)
-MCPSupport → Shared + ClawLogging
+Memory → Shared + IRelayLogging + Storage + ProviderKit
+Voice → Shared + IRelayLogging (macOS only)
+MCPSupport → Shared + IRelayLogging
 ```
 
 ---
@@ -292,10 +292,10 @@ Build these first, in this order:
 
 ```
 1. Shared
-2. ClawLogging
+2. IRelayLogging
 3. Networking
 4. Storage
-5. ClawSecurity
+5. IRelaySecurity
 6. ProviderKit
 7. ChannelKit
 8. ClaudeProvider

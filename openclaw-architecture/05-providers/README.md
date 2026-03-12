@@ -313,7 +313,7 @@ Secret references are resolved lazily — only when needed.
 
 ## Swift Replication Notes
 
-1. **Provider protocol**: Define `LLMProvider` with async streaming (already exists in SwiftClaw as `ProviderKit`)
+1. **Provider protocol**: Define `LLMProvider` with async streaming (already exists in iRelay as `ProviderKit`)
 2. **SSE parsing**: Use URLSession's `AsyncBytes` to parse `data:` lines
 3. **Auth profiles**: Codable struct with cooldown tracking
 4. **Secret resolution**: Support env vars, files, and process execution

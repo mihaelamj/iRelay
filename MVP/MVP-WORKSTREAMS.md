@@ -54,7 +54,7 @@ Four workstreams. The channel refactor is the foundation. Agent spawning is the 
 
 **Packages affected**: `IMessageChannel`
 
-**Definition of done**: Receive a text+image message in iMessage → SwiftClaw gets both → can reply with text and images.
+**Definition of done**: Receive a text+image message in iMessage → iRelay gets both → can reply with text and images.
 
 ---
 
@@ -85,13 +85,13 @@ Four workstreams. The channel refactor is the foundation. Agent spawning is the 
 
 **Packages affected**: `WhatsAppChannel`, `Networking` (media upload helper)
 
-**Definition of done**: Send an image via WhatsApp → SwiftClaw receives it → can reply with images/files.
+**Definition of done**: Send an image via WhatsApp → iRelay receives it → can reply with images/files.
 
 ---
 
 ## Workstream 4: Coding Agent Spawner
 
-**Why**: The core feature. This is what makes SwiftClaw useful.
+**Why**: The core feature. This is what makes iRelay useful.
 
 **What to build**:
 - `AgentSpawner` actor — spawn, stream, cancel agents
@@ -123,7 +123,7 @@ InboundMessage → Orchestrator → save media → build prompt → AgentSpawner
 - Config loading with `${VAR}` substitution
 - Required fields: `channels.imessage.enabled`, `agents.default.type`, `agents.default.workingDirectory`
 - Optional: `agents.default.model`, `agents.default.budget`, `agents.default.allowedTools`
-- `swiftclaw init` — generate example config
+- `irelay init` — generate example config
 - Error messages that tell you exactly what's wrong
 - Setup docs: Full Disk Access, API keys, channel setup
 

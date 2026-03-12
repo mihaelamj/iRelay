@@ -187,4 +187,4 @@ Key environment variables that override config:
 3. **Secret resolution**: Support env vars (`ProcessInfo.processInfo.environment`) and file reads
 4. **Migration**: Version-stamped config with migration functions
 5. **Hot-reload**: Use `DispatchSource.makeFileSystemObjectSource` for file watching
-6. **Location**: `~/.swiftclaw/config.json` (or similar)
+6. **Location**: `~/.irelay/config.json` (or similar)

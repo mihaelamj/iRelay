@@ -16,9 +16,9 @@ Each messaging platform has its own API, message format, rate limits, and quirks
 
 4. **Health monitoring**: Channels are auto-restarted if they disconnect or go stale, with cooldowns and hourly caps to prevent restart storms.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw already has 8 channels implemented. The key things to match are the chunking algorithms (paragraph-aware and markdown-aware splitting), the delivery queue pattern (write-ahead + two-phase ack), and the health monitoring state machine. The plugin interface is the contract that makes channels swappable.
+iRelay already has 8 channels implemented. The key things to match are the chunking algorithms (paragraph-aware and markdown-aware splitting), the delivery queue pattern (write-ahead + two-phase ack), and the health monitoring state machine. The plugin interface is the contract that makes channels swappable.
 
 ## Key Insight for Replication
 

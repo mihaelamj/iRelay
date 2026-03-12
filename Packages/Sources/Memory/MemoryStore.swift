@@ -1,7 +1,7 @@
 import Foundation
 import Shared
 import Storage
-import ClawLogging
+import IRelayLogging
 import GRDB
 
 // MARK: - Memory Store
@@ -9,10 +9,10 @@ import GRDB
 /// Stores and retrieves conversation memories using keyword-based search.
 /// Phase 1: SQLite FTS (full-text search). Phase 2: vector embeddings.
 public actor MemoryStore {
-    private let db: ClawDatabase
+    private let db: IRelayDatabase
     private let logger = Log.logger(for: "memory")
 
-    public init(db: ClawDatabase) {
+    public init(db: IRelayDatabase) {
         self.db = db
     }
 

@@ -408,7 +408,7 @@ Certain methods have their own rate limits:
 
 To replicate this in Swift:
 
-1. **WebSocket server**: Use Hummingbird + HummingbirdWebSocket (already in SwiftClaw)
+1. **WebSocket server**: Use Hummingbird + HummingbirdWebSocket (already in iRelay)
 2. **JSON protocol**: Define Codable structs for all frame types
 3. **Authentication**: Implement token/password auth first, device auth later
 4. **Channel manager**: An actor that tracks channel state and handles restarts

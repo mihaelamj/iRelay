@@ -214,15 +214,15 @@ final class SharedTests: XCTestCase {
 
     // MARK: - Paths
 
-    func testClawPathsNotEmpty() {
-        XCTAssertFalse(ClawPaths.configDirectory.path.isEmpty)
-        XCTAssertFalse(ClawPaths.dataDirectory.path.isEmpty)
-        XCTAssertTrue(ClawPaths.configFile.path.contains("config"))
-        XCTAssertTrue(ClawPaths.databaseFile.path.contains("irelay"))
+    func testIRelayPathsNotEmpty() {
+        XCTAssertFalse(IRelayPaths.configDirectory.path.isEmpty)
+        XCTAssertFalse(IRelayPaths.dataDirectory.path.isEmpty)
+        XCTAssertTrue(IRelayPaths.configFile.path.contains("config"))
+        XCTAssertTrue(IRelayPaths.databaseFile.path.contains("irelay"))
     }
 
     func testAgentDirectory() {
-        let dir = ClawPaths.agentDirectory(agentID: "test-agent")
+        let dir = IRelayPaths.agentDirectory(agentID: "test-agent")
         XCTAssertTrue(dir.path.contains("test-agent"))
         XCTAssertTrue(dir.path.contains("agents"))
     }
@@ -231,7 +231,7 @@ final class SharedTests: XCTestCase {
         let tmpDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("irelay-test-\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager.default.removeItem(at: tmpDir) }
-        try ClawPaths.ensureDirectoryExists(tmpDir)
+        try IRelayPaths.ensureDirectoryExists(tmpDir)
         var isDir: ObjCBool = false
         XCTAssertTrue(FileManager.default.fileExists(atPath: tmpDir.path, isDirectory: &isDir))
         XCTAssertTrue(isDir.boolValue)

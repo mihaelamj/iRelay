@@ -14,9 +14,9 @@ Scheduling lets the agent **act autonomously** on a timer — sending daily summ
 
 4. **Failure management**: Consecutive errors trigger exponential backoff (30s → 1min → 5min → 15min → 60min) and optional failure alerts after N errors. One-shot jobs retry on transient errors; recurring jobs shift their next run time.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw needs a timer-based heartbeat loop (wake every 1-60 seconds, check for due jobs), persistent job storage (JSON with atomic writes), and the backoff/retry logic. The cron expression parsing can use a Swift cron library. The key design choice is the single-timer pattern: one setTimeout for the next soonest job, not one timer per job.
+iRelay needs a timer-based heartbeat loop (wake every 1-60 seconds, check for due jobs), persistent job storage (JSON with atomic writes), and the backoff/retry logic. The cron expression parsing can use a Swift cron library. The key design choice is the single-timer pattern: one setTimeout for the next soonest job, not one timer per job.
 
 ## Key Insight for Replication
 

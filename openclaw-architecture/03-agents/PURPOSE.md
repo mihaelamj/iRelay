@@ -16,9 +16,9 @@ Calling an LLM API is simple. Running a reliable, production-grade agent is not.
 
 4. **Subagents**: Complex tasks can spawn child agents with isolated context and restricted tools, enabling parallel work with depth-limited recursion.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's `ClawAgentRuntime` needs to replicate the run loop (attempt → check result → retry/failover/compact → repeat), the system prompt assembly pipeline, and the tool policy evaluation chain. The streaming event lifecycle (message_start → message_update → tool_execution → message_end) is what the UI and channels consume.
+iRelay's `ClawAgentRuntime` needs to replicate the run loop (attempt → check result → retry/failover/compact → repeat), the system prompt assembly pipeline, and the tool policy evaluation chain. The streaming event lifecycle (message_start → message_update → tool_execution → message_end) is what the UI and channels consume.
 
 ## Key Insight for Replication
 

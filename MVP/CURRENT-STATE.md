@@ -1,4 +1,4 @@
-# SwiftClaw — Current State
+# iRelay — Current State
 
 ## Build Status
 - **Compiles**: Yes (Swift 6.0+, ~57s)
@@ -9,8 +9,8 @@
 
 ### Foundation (100%)
 - **Shared** — Models, config types, message content enum, paths, constants
-- **ClawLogging** — Structured logging
-- **ClawSecurity** — Keychain integration
+- **IRelayLogging** — Structured logging
+- **IRelaySecurity** — Keychain integration
 - **Storage** — GRDB/SQLite with migrations
 - **Networking** — HTTP client, SSE streaming
 

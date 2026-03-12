@@ -14,9 +14,9 @@ Sessions are the **memory of each conversation**. They track who's talking, what
 
 4. **Concurrency safety**: Multiple messages can arrive simultaneously. File locks with PID-based staleness detection prevent corruption, and the session store uses atomic writes to ensure consistency.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's `ClawSessions` package needs the JSONL transcript format (append-only, one JSON per line), the session store (JSON with normalized keys and 45-second cache), and the compaction algorithm (3-tier: full summary → partial → minimal fallback). The context pruning system (soft trim tool results, then hard clear) is important for long conversations.
+iRelay's `ClawSessions` package needs the JSONL transcript format (append-only, one JSON per line), the session store (JSON with normalized keys and 45-second cache), and the compaction algorithm (3-tier: full summary → partial → minimal fallback). The context pruning system (soft trim tool results, then hard clear) is important for long conversations.
 
 ## Key Insight for Replication
 

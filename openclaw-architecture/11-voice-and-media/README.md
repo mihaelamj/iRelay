@@ -179,7 +179,7 @@ The media pipeline handles all non-text content: images, audio, video, and docum
 
 ## Swift Replication Notes
 
-1. **TTS**: Use `AVSpeechSynthesizer` for local TTS (already in SwiftClaw's `Voice` package)
+1. **TTS**: Use `AVSpeechSynthesizer` for local TTS (already in iRelay's `Voice` package)
 2. **STT**: Use `Speech` framework for on-device recognition
 3. **Remote TTS**: URLSession calls to OpenAI/ElevenLabs APIs
 4. **Media handling**: Use `AVFoundation` for audio/video processing

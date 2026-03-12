@@ -14,9 +14,9 @@ Security controls **who can talk to the agent and what it can do**. It prevents 
 
 4. **Data protection**: API keys and tokens must never leak into logs, error messages, or LLM context. Secret redaction strips sensitive values from config snapshots, and external content wrapping prevents prompt injection from untrusted sources (emails, webhooks).
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's `ClawSecurity` package needs the DM policy decision tree (the three-mode gate), device pairing (Ed25519 key storage + token rotation), the command approval flow (two-phase registration + human decision), and the file system boundary checker (dual-cursor path validation with symlink following). Secret redaction should use pattern matching for known API key formats.
+iRelay's `IRelaySecurity` package needs the DM policy decision tree (the three-mode gate), device pairing (Ed25519 key storage + token rotation), the command approval flow (two-phase registration + human decision), and the file system boundary checker (dual-cursor path validation with symlink following). Secret redaction should use pattern matching for known API key formats.
 
 ## Key Insight for Replication
 

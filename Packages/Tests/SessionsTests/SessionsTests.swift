@@ -8,7 +8,7 @@ final class SessionsTests: XCTestCase {
     private func makeManager() throws -> SessionManager {
         let path = FileManager.default.temporaryDirectory
             .appendingPathComponent("test-sess-\(UUID().uuidString).db")
-        let db = try ClawDatabase(path: path)
+        let db = try IRelayDatabase(path: path)
         try db.migrate()
         return SessionManager(db: db)
     }

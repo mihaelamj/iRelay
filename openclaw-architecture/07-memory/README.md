@@ -392,7 +392,7 @@ Batch failure tracking:
 
 ## Swift Replication Notes
 
-1. **SQLite**: Use GRDB (already in SwiftClaw) for all database operations
+1. **SQLite**: Use GRDB (already in iRelay) for all database operations
 2. **sqlite-vec**: There's a C library that works with Swift — or implement cosine similarity in pure Swift
 3. **FTS5**: GRDB supports FTS5 natively
 4. **Embedding providers**: URLSession-based async API calls

@@ -1,8 +1,8 @@
 import XCTest
 import Logging
-@testable import ClawLogging
+@testable import IRelayLogging
 
-final class ClawLoggingTests: XCTestCase {
+final class IRelayLoggingTests: XCTestCase {
     func testBootstrap() {
         Log.bootstrap(level: .debug)
     }

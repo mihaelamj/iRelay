@@ -2,7 +2,7 @@
 
 ## What This Is
 
-The core new capability of SwiftClaw. Instead of being an LLM chat relay (send message to Claude API, return response), SwiftClaw **spawns real coding agents** — Claude Code, Codex, Gemini CLI — as subprocesses and streams their output back to the user's iMessage/WhatsApp.
+The core new capability of iRelay. Instead of being an LLM chat relay (send message to Claude API, return response), iRelay **spawns real coding agents** — Claude Code, Codex, Gemini CLI — as subprocesses and streams their output back to the user's iMessage/WhatsApp.
 
 ## Why Spawn Instead of API
 
@@ -11,7 +11,7 @@ The core new capability of SwiftClaw. Instead of being an LLM chat relay (send m
 | Direct API (current) | Simple, fast | No file access, no tools, no git, no terminal |
 | Spawn CLI agent | Full coding capability, file editing, git, tests | Process management, streaming complexity |
 
-The whole point of SwiftClaw is that the agent can **do things on your machine**. Claude Code already knows how to edit files, run tests, use git, manage projects. We don't need to reimplement that — we spawn it.
+The whole point of iRelay is that the agent can **do things on your machine**. Claude Code already knows how to edit files, run tests, use git, manage projects. We don't need to reimplement that — we spawn it.
 
 ## Supported Agents
 
@@ -193,11 +193,11 @@ iMessage image → InboundMessage(.image(Data, "image/png"))
     → AgentSpawner includes in prompt or as CLI flag
 
 Claude Code: Write image to temp file, reference in prompt:
-    "The user sent an image (saved at /tmp/swiftclaw/img_abc.png). Analyze it."
+    "The user sent an image (saved at /tmp/irelay/img_abc.png). Analyze it."
     Claude Code will use its Read tool to view the image.
 
 Codex: Use -i flag:
-    codex exec "Fix this layout" -i /tmp/swiftclaw/img_abc.png
+    codex exec "Fix this layout" -i /tmp/irelay/img_abc.png
 ```
 
 For links and videos:
@@ -215,8 +215,8 @@ IMessageChannel.pollNewMessages()
          │
          ▼
 ServiceOrchestrator.handleInbound()
-    ├── Save image to /tmp/swiftclaw/img_abc.png
-    ├── Build prompt: "Add dark mode\n[Image: /tmp/swiftclaw/img_abc.png]"
+    ├── Save image to /tmp/irelay/img_abc.png
+    ├── Build prompt: "Add dark mode\n[Image: /tmp/irelay/img_abc.png]"
     ├── Determine agent: config.defaultAgent → .claude
     │
     ▼

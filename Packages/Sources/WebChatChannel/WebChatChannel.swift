@@ -2,7 +2,7 @@ import Foundation
 import ChannelKit
 import Shared
 import Hummingbird
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Configuration
 

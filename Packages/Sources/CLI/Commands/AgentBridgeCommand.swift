@@ -2,7 +2,7 @@ import ArgumentParser
 import Dispatch
 import Foundation
 import Shared
-import ClawLogging
+import IRelayLogging
 import IMessageChannel
 import ChannelKit
 
@@ -27,11 +27,15 @@ struct AgentBridgeCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Max characters per iMessage chunk")
     var chunkSize: Int = 1500
 
+    @Option(name: .long, help: "Required message prefix (case-insensitive). Messages without this prefix are ignored.")
+    var prefix: String = "irelay"
+
     func run() async throws {
         setbuf(stdout, nil)
         Log.bootstrap(level: .info)
 
         print("=== iRelay Agent Bridge ===")
+        print("Prefix: \(prefix)")
         print("Default agent: \(agent)")
         print("Working dir: \(workDir)")
         if let model { print("Model: \(model)") }
@@ -59,8 +63,14 @@ struct AgentBridgeCommand: AsyncParsableCommand {
             let (rawText, attachmentPaths) = extractContent(from: inbound.content)
             guard !rawText.isEmpty || !attachmentPaths.isEmpty else { return }
 
+            // Require prefix (case-insensitive) — ignore messages without it
+            let prefixPattern = prefix.lowercased() + ":"
+            guard rawText.lowercased().hasPrefix(prefixPattern) else { return }
+            let unprefixed = String(rawText.dropFirst(prefixPattern.count))
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
             // Route agent based on message prefix: "codex: ..." or "@codex ..."
-            let (selectedAgent, text) = parseAgentPrefix(rawText, defaultAgent: agent)
+            let (selectedAgent, text) = parseAgentPrefix(unprefixed, defaultAgent: agent)
 
             print()
             print("[\(formatTime(Date()))] [\(selectedAgent)] PROMPT from \(sender): \(text)")
@@ -74,7 +84,7 @@ struct AgentBridgeCommand: AsyncParsableCommand {
                 sessionID: "bridge",
                 channelID: "imessage",
                 recipientID: sender,
-                content: .text("⚡ \(selectedAgent): Running...")
+                content: .text("iRelay: \(selectedAgent) running...")
             ))
 
             // Build prompt — for Claude, include file paths in text; for Codex, use -i flags
@@ -96,14 +106,15 @@ struct AgentBridgeCommand: AsyncParsableCommand {
             print("  [result] \(result.prefix(100))...")
             fflush(stdout)
 
-            // Send response in chunks
+            // Send response in chunks, prefix first chunk with iRelay header
             let chunks = splitMessage(result, maxLength: chunkSize)
-            for chunk in chunks {
+            for (i, chunk) in chunks.enumerated() {
+                let body = i == 0 ? "📡 iRelay:\n\(chunk)" : chunk
                 try? await channel.send(OutboundMessage(
                     sessionID: "bridge",
                     channelID: "imessage",
                     recipientID: sender,
-                    content: .text(chunk)
+                    content: .text(body)
                 ))
             }
         }

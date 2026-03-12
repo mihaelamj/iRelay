@@ -1,7 +1,7 @@
 import Foundation
 import ChannelKit
 import Shared
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Configuration
 

@@ -1,4 +1,4 @@
-# SwiftClaw MVP — Scope Definition
+# iRelay MVP — Scope Definition
 
 ## The MVP in One Sentence
 
@@ -44,7 +44,7 @@
 - Session tracking (resume conversations with the same agent)
 
 ### 5. Config Loading
-- Read `~/.swiftclaw/config.json`
+- Read `~/.irelay/config.json`
 - `${VAR}` environment variable substitution
 - Validate required fields (at minimum: which channel, which agent CLI path)
 
@@ -81,19 +81,19 @@
 ### Quick Chat
 ```
 You iMessage: "What's the difference between actor and class in Swift?"
-SwiftClaw replies in 2 seconds with a clear explanation.
+iRelay replies in 2 seconds with a clear explanation.
 ```
 
 ### Coding Task
 ```
 You iMessage: "code: fix the failing test in Storage"
-SwiftClaw spawns Claude Code → it finds the bug → fixes it → replies with the diff.
+iRelay spawns Claude Code → it finds the bug → fixes it → replies with the diff.
 ```
 
 ### Visual Context
 ```
 You iMessage a screenshot + "code: fix this layout bug"
-SwiftClaw saves the image → spawns Claude Code with the image path →
+iRelay saves the image → spawns Claude Code with the image path →
 agent analyzes → makes the fix → replies with what changed.
 ```
 

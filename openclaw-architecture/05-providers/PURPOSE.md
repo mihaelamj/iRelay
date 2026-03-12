@@ -16,9 +16,9 @@ Each LLM provider has a different API, authentication scheme, and error behavior
 
 4. **Streaming**: SSE and NDJSON streams are parsed incrementally, with partial content pushed to the UI and channels in real-time as the LLM generates.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's provider packages (`ClawAnthropicProvider`, `ClawOpenAIProvider`, etc.) need to implement the same streaming interfaces, auth rotation with cooldown math (60s × 5^(n-1)), and model resolution. The SSE parsing (line-by-line with buffering) and token usage tracking are also critical for feature parity.
+iRelay's provider packages (`ClawAnthropicProvider`, `ClawOpenAIProvider`, etc.) need to implement the same streaming interfaces, auth rotation with cooldown math (60s × 5^(n-1)), and model resolution. The SSE parsing (line-by-line with buffering) and token usage tracking are also critical for feature parity.
 
 ## Key Insight for Replication
 

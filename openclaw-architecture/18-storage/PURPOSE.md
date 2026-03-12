@@ -14,9 +14,9 @@ Storage handles **how data survives** across restarts, crashes, and concurrent a
 
 4. **Credential security**: Auth profiles, API keys, and OAuth tokens need secure storage with lock-protected writes. The storage layer handles file permissions (0o600 for files, 0o700 for directories) and atomic operations.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw should use `FileManager.replaceItem(at:withItemAt:)` for atomic writes on macOS, `flock()` for file locks, GRDB/SQLite for memory and potentially sessions (better query support than JSON), and Keychain via `ClawSecurity` for credentials (more secure than JSON files). The JSONL format for transcripts can be read/written with `FileHandle`.
+iRelay should use `FileManager.replaceItem(at:withItemAt:)` for atomic writes on macOS, `flock()` for file locks, GRDB/SQLite for memory and potentially sessions (better query support than JSON), and Keychain via `IRelaySecurity` for credentials (more secure than JSON files). The JSONL format for transcripts can be read/written with `FileHandle`.
 
 ## Key Insight for Replication
 

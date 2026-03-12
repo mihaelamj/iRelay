@@ -147,7 +147,7 @@ openclaw channels status
 
 ## Swift Replication Notes
 
-1. **CLI framework**: Swift Argument Parser (already in SwiftClaw)
+1. **CLI framework**: Swift Argument Parser (already in iRelay)
 2. **Command structure**: Use `ParsableCommand` with subcommands
 3. **Lazy loading**: Not needed in Swift (compiled, no module loading cost)
 4. **Interactive wizard**: Use Swift's `readLine()` or a TUI library

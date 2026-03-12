@@ -16,9 +16,9 @@ Without a gateway, every component would need direct connections to every other 
 
 4. **Backpressure**: Slow clients don't block fast ones. The gateway detects slow consumers and either drops non-essential events or disconnects them.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's `ClawGateway` package needs to implement the same WebSocket protocol (JSON frames with req/res/event types), the same challenge-based authentication handshake, and the same event broadcasting with scope guards. The exact frame format matters because any Control UI needs to speak the same protocol.
+iRelay's `ClawGateway` package needs to implement the same WebSocket protocol (JSON frames with req/res/event types), the same challenge-based authentication handshake, and the same event broadcasting with scope guards. The exact frame format matters because any Control UI needs to speak the same protocol.
 
 ## Key Insight for Replication
 

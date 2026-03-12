@@ -14,9 +14,9 @@ Configuration controls **everything about how OpenClaw behaves** — which chann
 
 4. **Migration**: As OpenClaw evolves, config fields get renamed or restructured. Idempotent migrations automatically upgrade old configs without user intervention, and each migration checks for its source field rather than relying on version numbers.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's config system (Codable JSON in `~/.swiftclaw/`) needs the same `${VAR}` substitution, Zod-equivalent validation (Swift's Codable + custom validators), merge-patch semantics for partial updates, and the include directive system for splitting config across files. The 12-step loading pipeline is the reference implementation.
+iRelay's config system (Codable JSON in `~/.irelay/`) needs the same `${VAR}` substitution, Zod-equivalent validation (Swift's Codable + custom validators), merge-patch semantics for partial updates, and the include directive system for splitting config across files. The 12-step loading pipeline is the reference implementation.
 
 ## Key Insight for Replication
 

@@ -14,7 +14,7 @@ Browser automation gives the agent **eyes and hands on the web**. It can navigat
 
 4. **Safe abstraction**: Raw CDP is complex. The Playwright abstraction layer provides high-level actions (click, type, wait, fill) that map to reliable CDP operations with proper timeouts and error handling.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
 Browser automation is one of the later features to replicate. The core need is a CDP WebSocket client (JSON-RPC over WebSocket) and the screenshot capture pipeline (capture → normalize size → return). For full interaction, the action dispatch system (click/type/wait by element reference) and accessibility snapshots are needed.
 

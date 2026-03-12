@@ -2,16 +2,16 @@ import Foundation
 import GRDB
 import Shared
 import Storage
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Session Manager
 
 public actor SessionManager {
-    private let db: ClawDatabase
+    private let db: IRelayDatabase
     private let logger = Log.sessions
     private var activeSessions: [String: Session] = [:]
 
-    public init(db: ClawDatabase) {
+    public init(db: IRelayDatabase) {
         self.db = db
     }
 

@@ -4,10 +4,10 @@ import GRDB
 @testable import Shared
 
 final class StorageTests: XCTestCase {
-    private func makeTempDB() throws -> ClawDatabase {
+    private func makeTempDB() throws -> IRelayDatabase {
         let path = FileManager.default.temporaryDirectory
             .appendingPathComponent("test-\(UUID().uuidString).db")
-        let db = try ClawDatabase(path: path)
+        let db = try IRelayDatabase(path: path)
         try db.migrate()
         return db
     }

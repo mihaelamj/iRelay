@@ -1,7 +1,7 @@
 import XCTest
-@testable import ClawSecurity
+@testable import IRelaySecurity
 
-final class ClawSecurityTests: XCTestCase {
+final class IRelaySecurityTests: XCTestCase {
     func testKeychainStoreInit() {
         let store = KeychainStore(service: "com.irelay.test")
         XCTAssertNotNil(store)

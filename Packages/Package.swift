@@ -11,8 +11,8 @@ import PackageDescription
 let allProducts: [Product] = [
     // Foundation Layer
     .singleTargetLibrary("Shared"),
-    .singleTargetLibrary("ClawLogging"),
-    .singleTargetLibrary("ClawSecurity"),
+    .singleTargetLibrary("IRelayLogging"),
+    .singleTargetLibrary("IRelaySecurity"),
     .singleTargetLibrary("Storage"),
     .singleTargetLibrary("Networking"),
 
@@ -96,31 +96,31 @@ let targets: [Target] = {
     )
 
     let loggingTarget = Target.target(
-        name: "ClawLogging",
+        name: "IRelayLogging",
         dependencies: [
             "Shared",
             .product(name: "Logging", package: "swift-log"),
         ]
     )
     let loggingTestsTarget = Target.testTarget(
-        name: "ClawLoggingTests",
-        dependencies: ["ClawLogging", "TestSupport"]
+        name: "IRelayLoggingTests",
+        dependencies: ["IRelayLogging", "TestSupport"]
     )
 
     let securityTarget = Target.target(
-        name: "ClawSecurity",
+        name: "IRelaySecurity",
         dependencies: ["Shared"]
     )
     let securityTestsTarget = Target.testTarget(
-        name: "ClawSecurityTests",
-        dependencies: ["ClawSecurity", "TestSupport"]
+        name: "IRelaySecurityTests",
+        dependencies: ["IRelaySecurity", "TestSupport"]
     )
 
     let storageTarget = Target.target(
         name: "Storage",
         dependencies: [
             "Shared",
-            "ClawLogging",
+            "IRelayLogging",
             .product(name: "GRDB", package: "GRDB.swift"),
         ]
     )
@@ -131,7 +131,7 @@ let targets: [Target] = {
 
     let networkingTarget = Target.target(
         name: "Networking",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
     let networkingTestsTarget = Target.testTarget(
         name: "NetworkingTests",
@@ -142,7 +142,7 @@ let targets: [Target] = {
 
     let channelKitTarget = Target.target(
         name: "ChannelKit",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
     let channelKitTestsTarget = Target.testTarget(
         name: "ChannelKitTests",
@@ -151,7 +151,7 @@ let targets: [Target] = {
 
     let providerKitTarget = Target.target(
         name: "ProviderKit",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
     let providerKitTestsTarget = Target.testTarget(
         name: "ProviderKitTests",
@@ -165,7 +165,7 @@ let targets: [Target] = {
         dependencies: [
             "ChannelKit",
             "Shared",
-            "ClawLogging",
+            "IRelayLogging",
             .product(name: "GRDB", package: "GRDB.swift"),
         ]
     )
@@ -266,7 +266,7 @@ let targets: [Target] = {
         name: "Gateway",
         dependencies: [
             "Shared",
-            "ClawLogging",
+            "IRelayLogging",
             .product(name: "Hummingbird", package: "hummingbird"),
             .product(name: "HummingbirdWebSocket", package: "hummingbird-websocket"),
         ]
@@ -280,7 +280,7 @@ let targets: [Target] = {
         name: "Sessions",
         dependencies: [
             "Shared",
-            "ClawLogging",
+            "IRelayLogging",
             "Storage",
             .product(name: "GRDB", package: "GRDB.swift"),
         ]
@@ -292,12 +292,12 @@ let targets: [Target] = {
 
     let agentsTarget = Target.target(
         name: "Agents",
-        dependencies: ["Shared", "ClawLogging", "ProviderKit", "Sessions"]
+        dependencies: ["Shared", "IRelayLogging", "ProviderKit", "Sessions"]
     )
 
     let agentSpawnerTarget = Target.target(
         name: "AgentSpawner",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
     let agentSpawnerTestsTarget = Target.testTarget(
         name: "AgentSpawnerTests",
@@ -306,12 +306,12 @@ let targets: [Target] = {
 
     let schedulingTarget = Target.target(
         name: "Scheduling",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
 
     let voiceTarget = Target.target(
         name: "Voice",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
     let voiceTestsTarget = Target.testTarget(
         name: "VoiceTests",
@@ -322,7 +322,7 @@ let targets: [Target] = {
         name: "Memory",
         dependencies: [
             "Shared",
-            "ClawLogging",
+            "IRelayLogging",
             "Storage",
             "ProviderKit",
             .product(name: "GRDB", package: "GRDB.swift"),
@@ -335,7 +335,7 @@ let targets: [Target] = {
 
     let mcpSupportTarget = Target.target(
         name: "MCPSupport",
-        dependencies: ["Shared", "ClawLogging"]
+        dependencies: ["Shared", "IRelayLogging"]
     )
 
     // ---------- Service Layer ----------
@@ -350,7 +350,7 @@ let targets: [Target] = {
             "Shared",
             "Storage",
             "Scheduling",
-            "ClawLogging",
+            "IRelayLogging",
         ]
     )
 
@@ -362,7 +362,7 @@ let targets: [Target] = {
             "Services",
             "Gateway",
             "Shared",
-            "ClawLogging",
+            "IRelayLogging",
             // Channels
             "IMessageChannel",
             "WhatsAppChannel",
@@ -379,7 +379,7 @@ let targets: [Target] = {
             "OllamaProvider",
             "GeminiProvider",
             // Core
-            "ClawSecurity",
+            "IRelaySecurity",
             "Storage",
             "Sessions",
             "Agents",
@@ -410,7 +410,7 @@ let targets: [Target] = {
     return [
         // Foundation
         sharedTarget, sharedTestsTarget,
-        loggingTarget, loggingTestsTarget,  // ClawLogging
+        loggingTarget, loggingTestsTarget,  // IRelayLogging
         securityTarget, securityTestsTarget,
         storageTarget, storageTestsTarget,
         networkingTarget, networkingTestsTarget,

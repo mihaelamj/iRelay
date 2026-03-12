@@ -1,14 +1,14 @@
-# SwiftClaw — Vision
+# iRelay — Vision
 
-## Why SwiftClaw Exists
+## Why iRelay Exists
 
 You want to talk to coding agents from your phone. Not through a laptop browser, not through a terminal — through **iMessage**, the app you already have open.
 
-The AI coding tools are incredible (Claude Code, Codex, Gemini CLI) but they're all terminal-bound. You have to be at your desk, in a shell, to use them. SwiftClaw breaks that constraint.
+The AI coding tools are incredible (Claude Code, Codex, Gemini CLI) but they're all terminal-bound. You have to be at your desk, in a shell, to use them. iRelay breaks that constraint.
 
 ## The Product
 
-SwiftClaw is a **macOS daemon** that:
+iRelay is a **macOS daemon** that:
 
 1. **Receives messages via iMessage** (and WhatsApp) — text, images, screenshots, links, videos
 2. **Spawns real coding agents** — Claude Code, Codex, or any CLI-based agent
@@ -18,16 +18,16 @@ SwiftClaw is a **macOS daemon** that:
 ## Core Use Cases
 
 ### 1. Code from Anywhere
-You're away from your desk. You iMessage: "Fix the failing test in SwiftClaw's Storage package." SwiftClaw spawns Claude Code in the project directory, it finds and fixes the test, and you get the diff on your phone.
+You're away from your desk. You iMessage: "Fix the failing test in iRelay's Storage package." iRelay spawns Claude Code in the project directory, it finds and fixes the test, and you get the diff on your phone.
 
 ### 2. Visual Context
-You screenshot a bug on your phone and send it via iMessage with "Fix this layout issue." SwiftClaw forwards the image to the coding agent, which analyzes it and makes the fix.
+You screenshot a bug on your phone and send it via iMessage with "Fix this layout issue." iRelay forwards the image to the coding agent, which analyzes it and makes the fix.
 
 ### 3. Quick Tasks
 "Run the tests." "What's the build status?" "Show me the last 5 commits." Quick commands that spawn a lightweight agent, get the answer, and reply.
 
 ### 4. Multi-Agent Delegation
-"Use Codex to refactor the networking layer, then have Claude Code review the changes." SwiftClaw orchestrates multiple agents sequentially or in parallel.
+"Use Codex to refactor the networking layer, then have Claude Code review the changes." iRelay orchestrates multiple agents sequentially or in parallel.
 
 ## Who It's For
 
@@ -35,7 +35,7 @@ You. A developer who wants to stay productive from anywhere, using the device al
 
 ## What Makes It Different
 
-| Other AI Coding Tools | SwiftClaw |
+| Other AI Coding Tools | iRelay |
 |-----------------------|-----------|
 | Terminal-only | iMessage + WhatsApp |
 | One agent at a time | Spawn and orchestrate multiple |

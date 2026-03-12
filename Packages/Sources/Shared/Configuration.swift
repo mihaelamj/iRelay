@@ -122,7 +122,7 @@ public struct ProviderEntry: Codable, Sendable {
 // MARK: - Load / Save
 
 extension IRelayConfig {
-    public static func load(from url: URL = ClawPaths.configFile) throws -> IRelayConfig {
+    public static func load(from url: URL = IRelayPaths.configFile) throws -> IRelayConfig {
         guard FileManager.default.fileExists(atPath: url.path) else {
             return IRelayConfig()
         }
@@ -130,8 +130,8 @@ extension IRelayConfig {
         return try JSONDecoder().decode(IRelayConfig.self, from: data)
     }
 
-    public func save(to url: URL = ClawPaths.configFile) throws {
-        try ClawPaths.ensureDirectoryExists(url.deletingLastPathComponent())
+    public func save(to url: URL = IRelayPaths.configFile) throws {
+        try IRelayPaths.ensureDirectoryExists(url.deletingLastPathComponent())
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data = try encoder.encode(self)

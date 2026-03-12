@@ -14,9 +14,9 @@ Plugins let developers **extend every aspect** of OpenClaw with code — adding 
 
 4. **Safe discovery and loading**: Plugins are security-checked (symlink escape, world-writable dirs, UID ownership) during discovery, and config schemas are validated via JSON Schema on load.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's plugin system needs the hook dispatch pattern (void hooks in parallel, modifying hooks sequentially), the priority ordering, and the plugin lifecycle (discover → load → register → activate). The 24 hook names define the integration surface — these are the points where plugins can intercept behavior.
+iRelay's plugin system needs the hook dispatch pattern (void hooks in parallel, modifying hooks sequentially), the priority ordering, and the plugin lifecycle (discover → load → register → activate). The 24 hook names define the integration surface — these are the points where plugins can intercept behavior.
 
 ## Key Insight for Replication
 

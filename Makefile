@@ -1,4 +1,4 @@
-# Root Makefile for SwiftClaw
+# Root Makefile for iRelay
 # Delegates all commands to Packages/Makefile
 
 .PHONY: help all build build-debug build-release install install-symlinks uninstall update test test-unit

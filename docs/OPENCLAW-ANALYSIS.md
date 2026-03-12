@@ -1,6 +1,6 @@
 # OpenClaw — Comprehensive Architecture Analysis
 
-Reference analysis for SwiftClaw. Based on [openclaw/openclaw](https://github.com/openclaw/openclaw) (v2026.3.3, ~800K LOC TypeScript).
+Reference analysis for iRelay. Based on [openclaw/openclaw](https://github.com/openclaw/openclaw) (v2026.3.3, ~800K LOC TypeScript).
 
 ---
 
@@ -618,7 +618,7 @@ Hooks + tools + channels + providers all extensible via plugin system. External 
 
 ---
 
-## 14. What SwiftClaw Must Replicate (MVP)
+## 14. What iRelay Must Replicate (MVP)
 
 From OpenClaw's architecture, the minimum viable path:
 
@@ -634,9 +634,9 @@ Everything else (multi-account, plugins, memory, approval flows) is post-MVP.
 
 ---
 
-## 15. SwiftClaw Mapping
+## 15. iRelay Mapping
 
-| OpenClaw Component | SwiftClaw Package | Notes |
+| OpenClaw Component | iRelay Package | Notes |
 |---|---|---|
 | `/src/gateway/` | Gateway | Hummingbird WebSocket instead of ws |
 | `/src/channels/plugins/types.*` | ChannelKit | Swift protocol instead of TS type |
@@ -646,7 +646,7 @@ Everything else (multi-account, plugins, memory, approval flows) is post-MVP.
 | `/src/config/sessions.ts` | Sessions | GRDB instead of JSON files |
 | `/src/config/config.ts` | Shared (config types) | Codable structs |
 | `/src/memory/` | Memory | GRDB + sqlite-vec |
-| `/src/secrets/` | ClawSecurity | Keychain on macOS, file on Linux |
+| `/src/secrets/` | IRelaySecurity | Keychain on macOS, file on Linux |
 | `/src/auto-reply/` | Services | Orchestration layer |
 | `/src/cli/` | CLI | ArgumentParser |
 | `/src/plugins/` | Future (post-MVP) | — |

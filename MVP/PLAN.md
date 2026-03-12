@@ -1,4 +1,4 @@
-# SwiftClaw MVP — Implementation Plan
+# iRelay MVP — Implementation Plan
 
 ## iMessage Integration: The Options
 
@@ -197,7 +197,7 @@ Day 3-6
 │   └── Store agent session ID for "continue" support
 │
 └── Attachment bridging
-    ├── Images → save to /tmp/swiftclaw/ → reference path in prompt
+    ├── Images → save to /tmp/irelay/ → reference path in prompt
     ├── Links → include URL in prompt text
     └── Videos → save to temp, reference path
 ```
@@ -212,15 +212,15 @@ Day 3-6
 ```
 Day 7-8
 ├── Config loading
-│   ├── Read ~/.swiftclaw/config.json
+│   ├── Read ~/.irelay/config.json
 │   ├── ${VAR} substitution (pre-process string before JSON decode)
 │   ├── .env file support
 │   ├── Validate required fields
 │   └── Apply defaults
 │
 ├── CLI polish
-│   ├── swiftclaw init → generate example config
-│   ├── swiftclaw status → show channel health, active agents
+│   ├── irelay init → generate example config
+│   ├── irelay status → show channel health, active agents
 │   └── Clear error messages on misconfiguration
 │
 ├── Dual-mode routing

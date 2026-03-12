@@ -14,9 +14,9 @@ Process execution lets the agent **run commands on the host machine** — execut
 
 4. **Cross-platform**: Windows handles processes differently (no process groups, .cmd files need cmd.exe routing, different signal handling). The system abstracts these differences behind a unified adapter interface.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's process execution needs the two-adapter pattern (PTY for interactive, child for direct), the dual-timeout system (overall + no-output), and the process tree kill sequence (SIGTERM → grace period → SIGKILL to process group). On macOS, the PTY allocation and process group management are the key pieces.
+iRelay's process execution needs the two-adapter pattern (PTY for interactive, child for direct), the dual-timeout system (overall + no-output), and the process tree kill sequence (SIGTERM → grace period → SIGKILL to process group). On macOS, the PTY allocation and process group management are the key pieces.
 
 ## Key Insight for Replication
 

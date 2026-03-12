@@ -14,9 +14,9 @@ Memory gives the agent **long-term recall** beyond the current conversation. It 
 
 4. **Diversity in results**: The MMR (Maximal Marginal Relevance) algorithm ensures search results aren't all near-duplicates. Combined with temporal decay (recent memories rank higher), the agent gets a diverse, relevant set of results.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw already uses GRDB/SQLite, which is perfect for this. The key algorithms to replicate are: file chunking (line-based with overlap), hybrid search (0.7 × vector + 0.3 × text), MMR re-ranking (greedy selection with Jaccard similarity penalty), and temporal decay (exponential with configurable half-life). The sync system (hash-based change detection, atomic reindex) keeps the index fresh.
+iRelay already uses GRDB/SQLite, which is perfect for this. The key algorithms to replicate are: file chunking (line-based with overlap), hybrid search (0.7 × vector + 0.3 × text), MMR re-ranking (greedy selection with Jaccard similarity penalty), and temporal decay (exponential with configurable half-life). The sync system (hash-based change detection, atomic reindex) keeps the index fresh.
 
 ## Key Insight for Replication
 

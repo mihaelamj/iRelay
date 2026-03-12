@@ -14,9 +14,9 @@ Infrastructure provides the **foundational utilities** that every other system d
 
 4. **Structured logging**: Debugging a multi-channel, multi-agent system requires good logs. Tagged subsystem loggers, daily rotation, size caps, and automatic secret redaction make logs useful and safe.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-Most infrastructure concerns map directly to Swift equivalents: `FileManager` for paths, `URLSession` with timeout configuration for HTTP, structured concurrency with `Task.sleep` for backoff, and actor-based counters for rate limiting. SwiftClaw's existing `ClawLogging` package covers logging. The path boundary checker is the most important piece to replicate carefully.
+Most infrastructure concerns map directly to Swift equivalents: `FileManager` for paths, `URLSession` with timeout configuration for HTTP, structured concurrency with `Task.sleep` for backoff, and actor-based counters for rate limiting. iRelay's existing `IRelayLogging` package covers logging. The path boundary checker is the most important piece to replicate carefully.
 
 ## Key Insight for Replication
 

@@ -2,7 +2,7 @@ import Foundation
 import Shared
 import ProviderKit
 import Sessions
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Agent Definition
 

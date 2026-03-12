@@ -195,5 +195,5 @@ API keys and tokens are automatically masked in log output:
 3. **Retries**: Use structured concurrency with `Task.sleep` for backoff
 4. **HTTP**: URLSession with timeout and size limit configuration
 5. **Rate limiting**: Actor-based sliding window counter
-6. **Logging**: Use SwiftClaw's existing `ClawLogging` (wraps swift-log)
+6. **Logging**: Use iRelay's existing `IRelayLogging` (wraps swift-log)
 7. **Process management**: LaunchAgent plist generation for macOS daemon

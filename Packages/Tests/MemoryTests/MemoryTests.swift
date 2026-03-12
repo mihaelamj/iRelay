@@ -8,7 +8,7 @@ final class MemoryTests: XCTestCase {
     private func makeStore() throws -> MemoryStore {
         let path = FileManager.default.temporaryDirectory
             .appendingPathComponent("test-mem-\(UUID().uuidString).db")
-        let db = try ClawDatabase(path: path)
+        let db = try IRelayDatabase(path: path)
         try db.migrate()
         let store = MemoryStore(db: db)
         return store

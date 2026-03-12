@@ -1,6 +1,6 @@
 import Foundation
 
-public enum ClawPaths {
+public enum IRelayPaths {
     public static var configDirectory: URL {
         #if os(macOS) || os(iOS)
         FileManager.default

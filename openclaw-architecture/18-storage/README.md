@@ -219,10 +219,10 @@ Backups include config, credentials, session store, and transcripts.
 
 ## Swift Replication Notes
 
-1. **Config**: Codable JSON files in `~/.swiftclaw/`
+1. **Config**: Codable JSON files in `~/.irelay/`
 2. **JSONL**: Line-by-line append using FileHandle
-3. **SQLite**: GRDB (already in SwiftClaw) for memory and potentially sessions
+3. **SQLite**: GRDB (already in iRelay) for memory and potentially sessions
 4. **Atomic writes**: Use `FileManager.replaceItem(at:withItemAt:)` on macOS
 5. **File locks**: Use `flock()` system call or custom lock files
-6. **Keychain**: Use SwiftClaw's `ClawSecurity` for credential storage (more secure than JSON files)
+6. **Keychain**: Use iRelay's `IRelaySecurity` for credential storage (more secure than JSON files)
 7. **Consider**: Using GRDB for sessions too (instead of JSON) for better query support

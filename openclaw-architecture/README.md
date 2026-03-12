@@ -1,6 +1,6 @@
 # OpenClaw Architecture Documentation
 
-This folder contains a complete, detailed breakdown of the OpenClaw project — the TypeScript/Node.js personal AI assistant that SwiftClaw aims to replicate in pure Swift.
+This folder contains a complete, detailed breakdown of the OpenClaw project — the TypeScript/Node.js personal AI assistant that iRelay aims to replicate in pure Swift.
 
 Each subfolder documents one major system. Read them in order for a full understanding, or jump to any system you need.
 

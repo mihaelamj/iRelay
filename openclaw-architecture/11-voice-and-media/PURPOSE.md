@@ -14,9 +14,9 @@ Voice and media let the agent **speak and see**. TTS converts text responses to 
 
 4. **Audio format conversion**: Phone systems use 8kHz mu-law audio, but TTS providers output 24kHz PCM. The conversion pipeline (resample + encode) bridges this gap.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw's `ClawVoiceEngine` needs TTS provider abstraction (multiple providers with fallback), the TTS directive parsing (inline `[[tts:...]]` tags), and media pipeline basics (download with size limits, MIME detection, format conversion). For voice calls, the audio resampling pipeline (24kHz PCM → 8kHz mu-law) is essential.
+iRelay's `ClawVoiceEngine` needs TTS provider abstraction (multiple providers with fallback), the TTS directive parsing (inline `[[tts:...]]` tags), and media pipeline basics (download with size limits, MIME detection, format conversion). For voice calls, the audio resampling pipeline (24kHz PCM → 8kHz mu-law) is essential.
 
 ## Key Insight for Replication
 

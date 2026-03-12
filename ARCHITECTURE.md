@@ -1,4 +1,4 @@
-# SwiftClaw Architecture
+# iRelay Architecture
 
 Apple-native personal AI assistant. Pure Swift. macOS + iOS.
 
@@ -20,7 +20,7 @@ Inspired by [OpenClaw](https://github.com/openclaw/openclaw), rebuilt from scrat
 
 ```
 ┌─────────────────────────────────────────────┐
-│              SwiftClaw Gateway               │
+│              iRelay Gateway               │
 │         (Hummingbird WebSocket Server)       │
 │                                              │
 │  ┌───────────┐ ┌──────────┐ ┌───────────┐   │
@@ -56,15 +56,15 @@ Inspired by [OpenClaw](https://github.com/openclaw/openclaw), rebuilt from scrat
 Follows the Cupertino pattern: single `Main.xcworkspace` at root, single `Package.swift` in `Packages/`, apps in `Apps/`.
 
 ```
-SwiftClaw/
+iRelay/
 ├── Main.xcworkspace/                  # Xcode workspace (references Packages/)
 │   ├── contents.xcworkspacedata
 │   └── xcshareddata/
 ├── Apps/                              # App targets (separate .xcodeproj)
-│   ├── SwiftClawMac/                  # macOS menu bar app (SwiftUI)
-│   │   └── SwiftClawMac.xcodeproj
-│   └── SwiftClawMobile/              # iOS app (SwiftUI)
-│       └── SwiftClawMobile.xcodeproj
+│   ├── iRelayMac/                  # macOS menu bar app (SwiftUI)
+│   │   └── iRelayMac.xcodeproj
+│   └── iRelayMobile/              # iOS app (SwiftUI)
+│       └── iRelayMobile.xcodeproj
 ├── Packages/                          # ALL code lives here
 │   ├── Package.swift                  # Single SPM manifest (all targets)
 │   ├── Package.resolved
@@ -104,7 +104,7 @@ SwiftClaw/
 │   │   │
 │   │   ├── Services/                  # High-level service layer (orchestration)
 │   │   ├── CLI/                       # Main CLI executable (ArgumentParser)
-│   │   │   ├── SwiftClaw.swift        # @main entry point
+│   │   │   ├── iRelay.swift        # @main entry point
 │   │   │   └── Commands/              # Subcommands
 │   │   │       ├── ServeCommand.swift
 │   │   │       ├── ChatCommand.swift
@@ -203,7 +203,7 @@ Test Support:
 import PackageDescription
 
 let package = Package(
-    name: "SwiftClaw",
+    name: "iRelay",
     platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
         // Foundation
@@ -243,7 +243,7 @@ let package = Package(
         .library(name: "MCPSupport", targets: ["MCPSupport"]),
 
         // Executables
-        .executable(name: "swiftclaw", targets: ["CLI"]),
+        .executable(name: "irelay", targets: ["CLI"]),
     ],
     dependencies: [
         // Server
@@ -419,15 +419,15 @@ All persistence via GRDB in the Storage package:
 ## CLI Commands
 
 ```
-swiftclaw serve            # Start gateway + all channels
-swiftclaw chat             # Interactive CLI chat
-swiftclaw config           # Manage agents, channels, providers
-swiftclaw config channels  # List/add/remove channels
-swiftclaw config providers # List/add/remove LLM providers
-swiftclaw config agents    # List/add/remove agents
-swiftclaw daemon install   # Install LaunchAgent
-swiftclaw daemon uninstall # Remove LaunchAgent
-swiftclaw status           # Show gateway + channel status
+irelay serve            # Start gateway + all channels
+irelay chat             # Interactive CLI chat
+irelay config           # Manage agents, channels, providers
+irelay config channels  # List/add/remove channels
+irelay config providers # List/add/remove LLM providers
+irelay config agents    # List/add/remove agents
+irelay daemon install   # Install LaunchAgent
+irelay daemon uninstall # Remove LaunchAgent
+irelay status           # Show gateway + channel status
 ```
 
 ## Build System
@@ -457,7 +457,7 @@ format:
 
 install:
 	swift build -c release
-	cp .build/release/swiftclaw /usr/local/bin/
+	cp .build/release/irelay /usr/local/bin/
 
 clean:
 	swift package clean

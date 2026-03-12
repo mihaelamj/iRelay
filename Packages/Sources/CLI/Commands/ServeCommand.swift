@@ -1,9 +1,9 @@
 import ArgumentParser
 import Foundation
 import Shared
-import ClawLogging
+import IRelayLogging
 import Storage
-import ClawSecurity
+import IRelaySecurity
 import Sessions
 import Agents
 import ProviderKit
@@ -34,10 +34,10 @@ struct ServeCommand: AsyncParsableCommand {
 
         // 2. Load config
         let configURL = config.map { URL(fileURLWithPath: $0) }
-        let appConfig = try IRelayConfig.load(from: configURL ?? ClawPaths.configFile)
+        let appConfig = try IRelayConfig.load(from: configURL ?? IRelayPaths.configFile)
 
         // 3. Initialize database
-        let db = try ClawDatabase()
+        let db = try IRelayDatabase()
         try db.migrate()
         logger.info("Database ready")
 

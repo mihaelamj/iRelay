@@ -161,5 +161,5 @@ Some operations are restricted to the device owner:
 1. **DM policy**: Simple enum-based policy check
 2. **Allowlists**: Store as arrays in configuration
 3. **Device pairing**: Use CryptoKit for keypair generation and signature verification
-4. **Keychain**: Use SwiftClaw's existing `ClawSecurity` package
+4. **Keychain**: Use iRelay's existing `IRelaySecurity` package
 5. **Tool policy**: Filter tool arrays based on policy config

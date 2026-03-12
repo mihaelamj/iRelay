@@ -1,17 +1,17 @@
 import Foundation
 import GRDB
 import Shared
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Database
 
-public final class ClawDatabase: Sendable {
+public final class IRelayDatabase: Sendable {
     private let dbPool: DatabasePool
     private let logger = Log.storage
 
     public init(path: URL? = nil) throws {
-        let dbPath = path ?? ClawPaths.databaseFile
-        try ClawPaths.ensureDirectoryExists(dbPath.deletingLastPathComponent())
+        let dbPath = path ?? IRelayPaths.databaseFile
+        try IRelayPaths.ensureDirectoryExists(dbPath.deletingLastPathComponent())
         self.dbPool = try DatabasePool(path: dbPath.path)
         logger.info("Database opened at \(dbPath.path)")
     }

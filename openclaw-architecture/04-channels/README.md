@@ -358,7 +358,7 @@ Different channels identify users differently:
 
 ## Swift Replication Notes
 
-1. **Channel protocol**: Define a Swift `Channel` protocol with actor isolation (already exists in SwiftClaw as `ChannelKit`)
+1. **Channel protocol**: Define a Swift `Channel` protocol with actor isolation (already exists in iRelay as `ChannelKit`)
 2. **Adapter pattern**: Each responsibility (config, outbound, security) can be a separate protocol
 3. **Plugin system**: Use Swift Package Manager dynamic libraries or a registration pattern
 4. **Text chunking**: Port the markdown-aware chunker with platform-specific limits

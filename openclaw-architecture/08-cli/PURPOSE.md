@@ -14,9 +14,9 @@ The CLI is the **operator's control panel**. It lets you set up OpenClaw, manage
 
 4. **Fast startup**: With 40+ commands, loading them all on every invocation would be slow. Lazy loading ensures only the invoked command's module is imported.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw uses Swift Argument Parser instead of Commander.js, but the command structure should mirror OpenClaw's: setup, config (get/set/apply), agent management, skills, plugins, health, sessions, and models. The `--json` output mode is important for tooling integration.
+iRelay uses Swift Argument Parser instead of Commander.js, but the command structure should mirror OpenClaw's: setup, config (get/set/apply), agent management, skills, plugins, health, sessions, and models. The `--json` output mode is important for tooling integration.
 
 ## Key Insight for Replication
 

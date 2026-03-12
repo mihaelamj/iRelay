@@ -14,9 +14,9 @@ Most AI assistants are cloud-only, locked to one chat interface, and forget ever
 
 3. **Self-hosted and extensible**: You control your data, your API keys, and your agent's behavior. A plugin system lets you add custom tools, channels, and behaviors.
 
-## What SwiftClaw Needs from This
+## What iRelay Needs from This
 
-SwiftClaw is replicating OpenClaw in pure Swift. This overview documentation provides the **complete mental model** — what the system does, how the pieces fit together, and what the startup/request/response lifecycle looks like — so the Swift implementation can match behavior without having to reverse-engineer it from 200K+ lines of TypeScript.
+iRelay is replicating OpenClaw in pure Swift. This overview documentation provides the **complete mental model** — what the system does, how the pieces fit together, and what the startup/request/response lifecycle looks like — so the Swift implementation can match behavior without having to reverse-engineer it from 200K+ lines of TypeScript.
 
 ## Key Insight for Replication
 

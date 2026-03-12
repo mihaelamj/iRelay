@@ -2,7 +2,7 @@ import Foundation
 import Hummingbird
 import HummingbirdWebSocket
 import Shared
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Gateway Configuration
 

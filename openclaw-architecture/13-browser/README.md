@@ -94,4 +94,4 @@ openclaw browser state           # Get/set browser state
 2. **CDP**: Could use Chrome CDP if cross-browser support needed
 3. **Process management**: Use `Process` class to launch Chrome
 4. **WebSocket**: URLSessionWebSocketTask for CDP connection
-5. **Lower priority**: This is a Phase 3 feature for SwiftClaw
+5. **Lower priority**: This is a Phase 3 feature for iRelay

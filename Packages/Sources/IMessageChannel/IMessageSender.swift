@@ -1,6 +1,6 @@
 #if os(macOS)
 import Foundation
-import ClawLogging
+import IRelayLogging
 import Shared
 
 // MARK: - iMessage Sender

@@ -1,7 +1,7 @@
 #if os(macOS)
 import Foundation
 import GRDB
-import ClawLogging
+import IRelayLogging
 
 // MARK: - Chat DB Reader
 
