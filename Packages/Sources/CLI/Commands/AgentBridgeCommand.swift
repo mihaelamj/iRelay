@@ -6,6 +6,109 @@ import IRelayLogging
 import IMessageChannel
 import ChannelKit
 
+// MARK: - Session History
+
+// MARK: - Bridge Session
+
+private struct BridgeSession {
+    let id: String
+    var messages: [(role: String, content: String)]
+}
+
+private final class BridgeSessions: @unchecked Sendable {
+    private var sessions: [String: BridgeSession] = [:]
+    private let lock = NSLock()
+    private let maxMessages = 40
+
+    /// Returns the session ID for this sender (creates one if needed).
+    func sessionID(for sender: String) -> String {
+        lock.lock()
+        defer { lock.unlock() }
+        if let session = sessions[sender] {
+            return session.id
+        }
+        let id = String(UUID().uuidString.prefix(6))
+        sessions[sender] = BridgeSession(id: id, messages: [])
+        return id
+    }
+
+    func append(sender: String, role: String, content: String) {
+        lock.lock()
+        defer { lock.unlock() }
+        if sessions[sender] == nil {
+            let id = String(UUID().uuidString.prefix(6))
+            sessions[sender] = BridgeSession(id: id, messages: [])
+        }
+        sessions[sender]!.messages.append((role: role, content: content))
+        if sessions[sender]!.messages.count > maxMessages {
+            sessions[sender]!.messages = Array(sessions[sender]!.messages.suffix(maxMessages))
+        }
+    }
+
+    func conversationContext(for sender: String) -> String? {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let session = sessions[sender], !session.messages.isEmpty else { return nil }
+        return session.messages.map { "\($0.role == "user" ? "User" : "Assistant"): \($0.content)" }
+            .joined(separator: "\n\n")
+    }
+
+    func messageCount(for sender: String) -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return sessions[sender]?.messages.count ?? 0
+    }
+
+    func memorySize(for sender: String) -> String {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let session = sessions[sender] else { return "0B" }
+        let bytes = session.messages.reduce(0) { $0 + $1.content.utf8.count + $1.role.utf8.count }
+        if bytes < 1024 { return "\(bytes)B" }
+        if bytes < 1024 * 1024 { return String(format: "%.1fKB", Double(bytes) / 1024.0) }
+        return String(format: "%.1fMB", Double(bytes) / (1024.0 * 1024.0))
+    }
+
+    func clear(sender: String) {
+        lock.lock()
+        defer { lock.unlock() }
+        sessions.removeValue(forKey: sender)
+    }
+
+    /// Save session to ~/.irelay/sessions/<sessionID>.md
+    func save(sender: String) -> (path: String, id: String)? {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let session = sessions[sender], !session.messages.isEmpty else { return nil }
+
+        let dir = NSHomeDirectory() + "/.irelay/sessions"
+        try? FileManager.default.createDirectory(
+            atPath: dir, withIntermediateDirectories: true
+        )
+
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        let filename = "\(session.id)_\(timestamp.prefix(10)).md"
+        let path = dir + "/" + filename
+
+        var content = "# iRelay Session \(session.id)\n"
+        content += "**Date:** \(timestamp)\n"
+        content += "**Sender:** \(sender)\n"
+        content += "**Messages:** \(session.messages.count)\n\n---\n\n"
+
+        for msg in session.messages {
+            let label = msg.role == "user" ? "**You**" : "**iRelay**"
+            content += "\(label):\n\(msg.content)\n\n---\n\n"
+        }
+
+        do {
+            try content.write(toFile: path, atomically: true, encoding: .utf8)
+            return (path: path, id: session.id)
+        } catch {
+            return nil
+        }
+    }
+}
+
 struct AgentBridgeCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "agent-bridge",
@@ -33,6 +136,8 @@ struct AgentBridgeCommand: AsyncParsableCommand {
     func run() async throws {
         setbuf(stdout, nil)
         Log.bootstrap(level: .info)
+
+        let sessions = BridgeSessions()
 
         print("=== iRelay Agent Bridge ===")
         print("Prefix: \(prefix)")
@@ -80,16 +185,65 @@ struct AgentBridgeCommand: AsyncParsableCommand {
             }
             fflush(stdout)
 
+            let sid = sessions.sessionID(for: sender)
+
             // Ack
             try? await channel.send(OutboundMessage(
                 sessionID: "bridge",
                 channelID: "imessage",
                 recipientID: sender,
-                content: .text("iRelay: \(selectedAgent) running...")
+                content: .text("iRelay [\(sid)]: \(selectedAgent) running...")
             ))
 
-            // Build prompt — for Claude, include file paths in text; for Codex, use -i flags
-            var fullPrompt = text
+            // Handle "clear" / "reset" to wipe session
+            if text.lowercased() == "clear" || text.lowercased() == "reset" {
+                sessions.clear(sender: sender)
+                try? await channel.send(OutboundMessage(
+                    sessionID: "bridge",
+                    channelID: "imessage",
+                    recipientID: sender,
+                    content: .text("📡 iRelay [\(sid)]: Session cleared.")
+                ))
+                return
+            }
+
+            // Handle "save" to persist session to disk
+            if text.lowercased() == "save" {
+                if let result = sessions.save(sender: sender) {
+                    let mem = sessions.memorySize(for: sender)
+                    let count = sessions.messageCount(for: sender)
+                    try? await channel.send(OutboundMessage(
+                        sessionID: "bridge",
+                        channelID: "imessage",
+                        recipientID: sender,
+                        content: .text("📡 iRelay [\(sid)]: Session saved (\(count) msgs, \(mem))\n\(result.path)")
+                    ))
+                } else {
+                    try? await channel.send(OutboundMessage(
+                        sessionID: "bridge",
+                        channelID: "imessage",
+                        recipientID: sender,
+                        content: .text("📡 iRelay [\(sid)]: Nothing to save — session is empty.")
+                    ))
+                }
+                return
+            }
+
+            // Record user message in session
+            sessions.append(sender: sender, role: "user", content: text)
+
+            // Build prompt with conversation history
+            var fullPrompt = ""
+            if let context = sessions.conversationContext(for: sender) {
+                // Drop the last entry (current message) since we add it below
+                let lines = context.components(separatedBy: "\n\nUser: \(text)")
+                let prior = lines.first ?? ""
+                if !prior.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    fullPrompt += "Previous conversation:\n\(prior)\n\n---\n\nNow respond to:\n"
+                }
+            }
+            fullPrompt += text
+
             if selectedAgent != "codex", !attachmentPaths.isEmpty {
                 let paths = attachmentPaths.map(\.path).joined(separator: "\n")
                 fullPrompt += "\n\nAttached files:\n\(paths)"
@@ -104,13 +258,18 @@ struct AgentBridgeCommand: AsyncParsableCommand {
                 attachmentPaths: attachmentPaths
             )
 
+            // Record assistant response in session
+            sessions.append(sender: sender, role: "assistant", content: result)
+
             print("  [result] \(result.prefix(100))...")
             fflush(stdout)
 
             // Send response in chunks, prefix first chunk with iRelay header
             let chunks = splitMessage(result, maxLength: chunkSize)
             for (i, chunk) in chunks.enumerated() {
-                let body = i == 0 ? "📡 iRelay:\n\(chunk)" : chunk
+                let msgNum = sessions.messageCount(for: sender) / 2
+                let mem = sessions.memorySize(for: sender)
+                let body = i == 0 ? "📡 iRelay [\(sid)] #\(msgNum) (\(mem)):\n\(chunk)" : chunk
                 try? await channel.send(OutboundMessage(
                     sessionID: "bridge",
                     channelID: "imessage",
