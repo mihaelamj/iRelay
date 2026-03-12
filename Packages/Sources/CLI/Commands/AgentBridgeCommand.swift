@@ -28,7 +28,7 @@ struct AgentBridgeCommand: AsyncParsableCommand {
     var chunkSize: Int = 1500
 
     @Option(name: .long, help: "Required message prefix (case-insensitive). Messages without this prefix are ignored.")
-    var prefix: String = "irelay"
+    var prefix: String = "irelayy"
 
     func run() async throws {
         setbuf(stdout, nil)
@@ -64,10 +64,11 @@ struct AgentBridgeCommand: AsyncParsableCommand {
             guard !rawText.isEmpty || !attachmentPaths.isEmpty else { return }
 
             // Require prefix (case-insensitive) — ignore messages without it
-            let prefixPattern = prefix.lowercased() + ":"
-            guard rawText.lowercased().hasPrefix(prefixPattern) else { return }
-            let unprefixed = String(rawText.dropFirst(prefixPattern.count))
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let lower = rawText.lowercased()
+            let prefixLower = prefix.lowercased()
+            guard lower.hasPrefix(prefixLower) else { return }
+            let unprefixed = String(rawText.dropFirst(prefixLower.count))
+                .trimmingCharacters(in: .init(charactersIn: ": ").union(.whitespacesAndNewlines))
 
             // Route agent based on message prefix: "codex: ..." or "@codex ..."
             let (selectedAgent, text) = parseAgentPrefix(unprefixed, defaultAgent: agent)
