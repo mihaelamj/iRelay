@@ -35,6 +35,8 @@ Send something like `irelayy fix the failing test` from your phone. Your Mac run
 
 No web UI, no port forwarding, no VPN. iMessage as a transport layer.
 
+**Important:** The Mac running iRelay must be signed into a different Apple ID than the device you message it from. You're sending an iMessage between two separate accounts — your phone texts the Mac, not itself.
+
 ## Architecture
 
 ```
