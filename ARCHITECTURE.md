@@ -4,30 +4,22 @@ A Swift daemon that turns iMessage (and other channels) into a remote terminal f
 
 ## System Overview
 
-```
-┌─────────────────────────────────────────────┐
-│              iRelay Gateway                 │
-│           (Hummingbird HTTP Server)         │
-│                                             │
-│  ┌───────────┐ ┌──────────┐ ┌───────────┐  │
-│  │  Session   │ │  Agent   │ │   Cron    │  │
-│  │  Manager   │ │  Router  │ │ Scheduler │  │
-│  └───────────┘ └──────────┘ └───────────┘  │
-│                                             │
-│  ┌─────────────────────────────────────┐    │
-│  │       Channel Plugin System         │    │
-│  │  iMessage │ Telegram │ Slack │ ...  │    │
-│  └─────────────────────────────────────┘    │
-│                                             │
-│  ┌─────────────────────────────────────┐    │
-│  │       LLM Provider System           │    │
-│  │  Claude │ OpenAI │ Ollama │ Gemini  │    │
-│  └─────────────────────────────────────┘    │
-│                                             │
-│  ┌─────────────────────────────────────┐    │
-│  │       Storage (GRDB/SQLite)         │    │
-│  └─────────────────────────────────────┘    │
-└─────────────────────────────────────────────┘
+```mermaid
+block-beta
+  columns 1
+  block:gateway["iRelay Gateway (Hummingbird HTTP Server)"]
+    columns 3
+    SM["Session Manager"] AR["Agent Router"] CS["Cron Scheduler"]
+  end
+  block:channels["Channels"]
+    columns 5
+    iMessage Telegram Slack Discord more1["..."]
+  end
+  block:providers["LLM Providers"]
+    columns 4
+    Claude OpenAI Ollama Gemini
+  end
+  Storage["Storage (GRDB/SQLite)"]
 ```
 
 ## Repository Structure
