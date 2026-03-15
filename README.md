@@ -1,5 +1,11 @@
 # iRelay
 
+<div align="center">
+  <img src="assets/hero.jpg" alt="iRelay — text your Mac, run an AI agent" width="100%">
+</div>
+
+<br>
+
 **Text your Mac. Run an AI agent.**
 
 A Swift daemon that turns iMessage into a remote terminal for Claude Code. Send a message from your phone, your Mac picks it up, spawns Claude Code in your project directory, and texts you back the result.
@@ -19,7 +25,7 @@ No terminal. No SSH. No laptop open. Just iMessage.
 
 <div align="center">
   <a href="https://www.youtube.com/shorts/ehOY7BnPOf0">
-    <img src="https://img.youtube.com/vi/ehOY7BnPOf0/0.jpg" alt="iRelay Demo" width="300">
+    <img src="https://img.youtube.com/vi/ehOY7BnPOf0/maxresdefault.jpg" alt="iRelay Demo" width="600">
   </a>
   <br>
   <em>Creating a GitHub repo from iMessage while walking around the house</em>
