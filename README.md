@@ -40,7 +40,7 @@ No web UI, no port forwarding, no VPN. iMessage as a transport layer.
 ```
 ┌─────────────────────────────────────────────┐
 │              iRelay Gateway                 │
-│         (Hummingbird WebSocket Server)      │
+│           (Hummingbird HTTP Server)          │
 │                                             │
 │  ┌───────────┐ ┌──────────┐ ┌───────────┐  │
 │  │  Session   │ │  Agent   │ │   Cron    │  │
@@ -83,16 +83,18 @@ No web UI, no port forwarding, no VPN. iMessage as a transport layer.
 
 | Provider | Status | Streaming |
 |----------|--------|-----------|
-| Claude | :white_check_mark: Working | SSE via URLSession |
-| OpenAI | :white_check_mark: Working | SSE via URLSession |
-| Ollama | :white_check_mark: Working | NDJSON (no tool support) |
-| Gemini | :white_check_mark: Working | SSE via URLSession |
+| Claude | :white_check_mark: Tested | SSE via URLSession |
+| OpenAI | :construction: Untested | SSE via URLSession |
+| Ollama | :construction: Untested | NDJSON (no tool support) |
+| Gemini | :construction: Untested | SSE via URLSession |
+
+Only Claude is wired into `serve` and `agent-bridge` commands today. The other three providers compile and implement the `LLMProvider` protocol but are not yet registered in any CLI command.
 
 ### Core Modules
 
 | Module | Status | Notes |
 |--------|--------|-------|
-| Gateway | :white_check_mark: Working | Hummingbird HTTP + WebSocket |
+| Gateway | :white_check_mark: Working | Hummingbird HTTP (webhooks, health, status) |
 | Sessions | :white_check_mark: Working | GRDB-backed, persistent |
 | Agents | :white_check_mark: Working | Routing, history, streaming |
 | AgentSpawner | :white_check_mark: Working | Subprocess execution with concurrency limits |
@@ -137,7 +139,7 @@ irelay agent-bridge     # iMessage ↔ Claude Code bridge
 
 ## Project Structure
 
-Extreme Packaging — single `Package.swift` in `Packages/`, `Main.xcworkspace` at root. 30+ SPM library targets, 1 executable.
+Extreme Packaging — single `Package.swift` in `Packages/`, `Main.xcworkspace` at root. 29 SPM library targets, 1 executable.
 
 ```
 iRelay/
@@ -146,7 +148,7 @@ iRelay/
 │   │   ├── Shared/             # Models, config, constants
 │   │   ├── Storage/            # GRDB/SQLite persistence
 │   │   ├── Networking/         # HTTP, SSE, WebSocket helpers
-│   │   ├── Gateway/            # Hummingbird WebSocket server
+│   │   ├── Gateway/            # Hummingbird HTTP server
 │   │   ├── Sessions/           # Session management + routing
 │   │   ├── Agents/             # Agent config + multi-agent routing
 │   │   ├── ChannelKit/         # Channel protocol (abstraction)

@@ -1,515 +1,291 @@
 # iRelay Architecture
 
-Apple-native personal AI assistant. Pure Swift. macOS + iOS.
+A Swift daemon that turns iMessage (and other channels) into a remote terminal for LLM agents. Pure Swift. macOS + iOS.
 
-## Vision
-
-A local-first AI assistant that lives on your Apple devices. No Node.js, no Electron, no cross-platform compromises. One language, one ecosystem.
-
-Inspired by [OpenClaw](https://github.com/openclaw/openclaw), rebuilt from scratch in Swift for the Apple platform.
-
-## Constraints
-
-- **Pure Swift** — no other languages, no bridging
-- **Apple platforms only** — macOS + iOS
-- **English default** — locale-aware architecture, no i18n work now
-- **Local-first** — runs on your devices, no cloud dependency
-- **Extreme Packaging** — maximum granular SPM modularization
-
-## System Architecture
+## System Overview
 
 ```
 ┌─────────────────────────────────────────────┐
-│              iRelay Gateway               │
-│         (Hummingbird WebSocket Server)       │
-│                                              │
-│  ┌───────────┐ ┌──────────┐ ┌───────────┐   │
-│  │  Session   │ │  Agent   │ │   Cron    │   │
-│  │  Manager   │ │  Router  │ │ Scheduler │   │
-│  └───────────┘ └──────────┘ └───────────┘   │
-│                                              │
-│  ┌───────────────────────────────────────┐   │
-│  │         Channel Plugin System         │   │
-│  │  iMessage │ Telegram │ Slack │ ...    │   │
-│  └───────────────────────────────────────┘   │
-│                                              │
-│  ┌───────────────────────────────────────┐   │
-│  │         LLM Provider System           │   │
-│  │  Claude │ OpenAI │ Ollama │ Gemini    │   │
-│  └───────────────────────────────────────┘   │
-│                                              │
-│  ┌───────────────────────────────────────┐   │
-│  │         Storage (GRDB/SQLite)         │   │
-│  └───────────────────────────────────────┘   │
+│              iRelay Gateway                 │
+│           (Hummingbird HTTP Server)         │
+│                                             │
+│  ┌───────────┐ ┌──────────┐ ┌───────────┐  │
+│  │  Session   │ │  Agent   │ │   Cron    │  │
+│  │  Manager   │ │  Router  │ │ Scheduler │  │
+│  └───────────┘ └──────────┘ └───────────┘  │
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │       Channel Plugin System         │    │
+│  │  iMessage │ Telegram │ Slack │ ...  │    │
+│  └─────────────────────────────────────┘    │
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │       LLM Provider System           │    │
+│  │  Claude │ OpenAI │ Ollama │ Gemini  │    │
+│  └─────────────────────────────────────┘    │
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │       Storage (GRDB/SQLite)         │    │
+│  └─────────────────────────────────────┘    │
 └─────────────────────────────────────────────┘
-        │                          │
-   ┌────┴────┐              ┌──────┴──────┐
-   │  macOS  │              │     iOS     │
-   │ Menu Bar│              │    App      │
-   │  App    │              │  (SwiftUI)  │
-   │(SwiftUI)│              │             │
-   └─────────┘              └─────────────┘
 ```
 
-## Repository Structure (Extreme Packaging)
+## Repository Structure
 
-Follows the Cupertino pattern: single `Main.xcworkspace` at root, single `Package.swift` in `Packages/`, apps in `Apps/`.
+Single `Main.xcworkspace` at root, single `Package.swift` in `Packages/`.
 
 ```
 iRelay/
-├── Main.xcworkspace/                  # Xcode workspace (references Packages/)
-│   ├── contents.xcworkspacedata
-│   └── xcshareddata/
-├── Apps/                              # App targets (separate .xcodeproj)
-│   ├── iRelayMac/                  # macOS menu bar app (SwiftUI)
-│   │   └── iRelayMac.xcodeproj
-│   └── iRelayMobile/              # iOS app (SwiftUI)
-│       └── iRelayMobile.xcodeproj
-├── Packages/                          # ALL code lives here
-│   ├── Package.swift                  # Single SPM manifest (all targets)
-│   ├── Package.resolved
+├── Main.xcworkspace/
+├── Packages/
+│   ├── Package.swift              # 29 library products + 1 executable
 │   ├── Makefile
-│   ├── VERSION
 │   ├── Sources/
-│   │   ├── Shared/                    # Foundation layer — models, config, paths
-│   │   ├── Logging/                   # Logging framework
-│   │   ├── Storage/                   # GRDB/SQLite persistence
-│   │   ├── Networking/                # HTTP client, SSE streaming, WebSocket
-│   │   ├── Security/                  # Keychain wrapper, credential management
+│   │   ├── Shared/                # Models, config, constants, paths
+│   │   ├── IRelayLogging/         # swift-log wrapper
+│   │   ├── IRelaySecurity/        # macOS Keychain wrapper
+│   │   ├── Storage/               # GRDB/SQLite persistence + migrations
+│   │   ├── Networking/            # HTTPClient + SSE streaming
 │   │   │
-│   │   ├── Gateway/                   # WebSocket server + protocol framing
-│   │   ├── Sessions/                  # Session management + routing
-│   │   ├── Agents/                    # Agent configuration + multi-agent routing
-│   │   ├── Scheduling/                # Cron + task scheduling
+│   │   ├── ChannelKit/            # Channel protocol + ChannelRegistry
+│   │   ├── IMessageChannel/       # AppleScript send + chat.db polling (GRDB)
+│   │   ├── WhatsAppChannel/       # Business Cloud API + webhook
+│   │   ├── TelegramChannel/       # Bot API long polling + webhook
+│   │   ├── SlackChannel/          # Web API + Events API
+│   │   ├── DiscordChannel/        # REST send + interactions (no Gateway WS)
+│   │   ├── SignalChannel/         # signal-cli subprocess
+│   │   ├── MatrixChannel/         # Client-Server API + /sync polling
+│   │   ├── IRCChannel/            # Raw TCP streams
+│   │   ├── WebChatChannel/        # Hummingbird REST + HTML UI
 │   │   │
-│   │   ├── ChannelKit/                # Channel protocol + registry (no implementations)
-│   │   ├── IMessageChannel/           # Native iMessage (Messages.framework)
-│   │   ├── TelegramChannel/           # Telegram Bot API (raw HTTP)
-│   │   ├── SlackChannel/              # Slack Web API + WebSocket
-│   │   ├── DiscordChannel/            # Discord Gateway + REST
-│   │   ├── SignalChannel/             # signal-cli subprocess
-│   │   ├── MatrixChannel/             # Matrix HTTP API
-│   │   ├── IRCChannel/                # Raw TCP (NWConnection)
-│   │   ├── WebChatChannel/            # Built-in web UI via Hummingbird
+│   │   ├── ProviderKit/           # LLMProvider protocol + ProviderRegistry
+│   │   ├── ClaudeProvider/        # Anthropic Messages API (SSE)
+│   │   ├── OpenAIProvider/        # Chat Completions API (SSE)
+│   │   ├── OllamaProvider/        # Local Ollama (NDJSON, no tools)
+│   │   ├── GeminiProvider/        # Google Generative AI (SSE)
 │   │   │
-│   │   ├── ProviderKit/               # LLM provider protocol + registry (no implementations)
-│   │   ├── ClaudeProvider/            # Anthropic Messages API (SSE)
-│   │   ├── OpenAIProvider/            # OpenAI Completions API (SSE)
-│   │   ├── OllamaProvider/            # Local Ollama (OpenAI-compatible)
-│   │   ├── GeminiProvider/            # Google Generative AI API
+│   │   ├── Gateway/               # Hummingbird HTTP server (webhooks, health, status)
+│   │   ├── Sessions/              # GRDB-backed session management
+│   │   ├── Agents/                # AgentRouter (routing + history)
+│   │   ├── AgentSpawner/          # Subprocess execution (claude, codex CLIs)
+│   │   ├── Scheduling/            # Interval + daily scheduling
+│   │   ├── Voice/                 # macOS `say` command TTS
+│   │   ├── Memory/                # FTS5 full-text search + tagging
+│   │   ├── MCPSupport/            # MCP client (JSON-RPC over stdio)
+│   │   ├── Services/              # ServiceOrchestrator (message pipeline)
 │   │   │
-│   │   ├── Voice/                     # AVFoundation TTS + Speech STT
-│   │   ├── MCPSupport/                # MCP server integration
-│   │   ├── Memory/                    # Vector search, embeddings, recall
-│   │   │
-│   │   ├── Services/                  # High-level service layer (orchestration)
-│   │   ├── CLI/                       # Main CLI executable (ArgumentParser)
-│   │   │   ├── iRelay.swift        # @main entry point
-│   │   │   └── Commands/              # Subcommands
+│   │   ├── CLI/                   # ArgumentParser entry point
+│   │   │   ├── iRelay.swift       # @main
+│   │   │   └── Commands/
 │   │   │       ├── ServeCommand.swift
 │   │   │       ├── ChatCommand.swift
-│   │   │       ├── ConfigCommand.swift
-│   │   │       ├── DaemonCommand.swift
-│   │   │       └── StatusCommand.swift
+│   │   │       ├── AgentBridgeCommand.swift
+│   │   │       ├── IMessageTestCommand.swift
+│   │   │       ├── ConfigCommand.swift      # stub
+│   │   │       └── StatusCommand.swift      # stub
 │   │   │
-│   │   └── TestSupport/               # Shared test utilities + fixtures
+│   │   └── TestSupport/
 │   │
-│   └── Tests/
-│       ├── SharedTests/
+│   └── Tests/                     # 20 test targets
+│       ├── SharedTests/           # Comprehensive
 │       ├── StorageTests/
-│       ├── GatewayTests/
 │       ├── SessionsTests/
+│       ├── AgentSpawnerTests/
+│       ├── NetworkingTests/
 │       ├── ChannelKitTests/
+│       ├── IMessageChannelTests/
+│       ├── WhatsAppChannelTests/
 │       ├── TelegramChannelTests/
 │       ├── SlackChannelTests/
-│       ├── ProviderKitTests/
 │       ├── ClaudeProviderTests/
 │       ├── OpenAIProviderTests/
-│       ├── VoiceTests/
+│       ├── ProviderKitTests/
+│       ├── GatewayTests/
+│       ├── IRelayLoggingTests/
+│       ├── IRelaySecurityTests/
 │       ├── MemoryTests/
+│       ├── VoiceTests/
 │       ├── CLITests/
 │       └── CLICommandTests/
-│           ├── ServeTests/
-│           └── ChatTests/
 │
-├── Makefile                           # Root Makefile (delegates to Packages/Makefile)
-├── .swiftlint.yml
-├── .swiftformat
-├── .pre-commit-config.yaml
-├── .gitignore
+├── Apps/                          # TBD: macOS menu bar + iOS apps
+├── Makefile                       # Delegates to Packages/Makefile
 ├── LICENSE
 ├── README.md
-├── ARCHITECTURE.md
-├── CHANGELOG.md
-└── install.sh
+└── ARCHITECTURE.md
 ```
 
-## Dependency Graph (Layered)
+## Dependency Graph
 
 ```
-Foundation Layer (zero dependencies):
-  ├── Shared            — Models, config types, paths, constants
-  ├── Logging           → Shared
-  └── Security          → Shared
+Foundation Layer (zero external deps):
+  ├── Shared
+  ├── IRelayLogging        → Shared + swift-log
+  └── IRelaySecurity       → Shared
 
 Infrastructure Layer:
-  ├── Storage           → Shared + Logging + GRDB
-  ├── Networking        → Shared + Logging (HTTP, SSE, WebSocket helpers)
-  └── Voice             → Shared + Logging (AVFoundation, Speech)
+  ├── Storage              → Shared + IRelayLogging + GRDB
+  └── Networking           → Shared + IRelayLogging
 
-Protocol Layer (abstractions only, no implementations):
-  ├── ChannelKit        → Shared + Logging
-  └── ProviderKit       → Shared + Logging
+Protocol Layer:
+  ├── ChannelKit           → Shared + IRelayLogging
+  └── ProviderKit          → Shared + IRelayLogging
 
-Channel Implementations (one package per channel):
-  ├── IMessageChannel   → ChannelKit + Shared
-  ├── TelegramChannel   → ChannelKit + Shared + Networking
-  ├── SlackChannel      → ChannelKit + Shared + Networking
-  ├── DiscordChannel    → ChannelKit + Shared + Networking
-  ├── SignalChannel     → ChannelKit + Shared
-  ├── MatrixChannel     → ChannelKit + Shared + Networking
-  ├── IRCChannel        → ChannelKit + Shared
-  └── WebChatChannel    → ChannelKit + Shared + Gateway
+Channel Implementations:
+  ├── IMessageChannel      → ChannelKit + Shared + IRelayLogging + GRDB
+  ├── WhatsAppChannel      → ChannelKit + Shared + Networking
+  ├── TelegramChannel      → ChannelKit + Shared + Networking
+  ├── SlackChannel         → ChannelKit + Shared + Networking
+  ├── DiscordChannel       → ChannelKit + Shared + Networking
+  ├── SignalChannel        → ChannelKit + Shared
+  ├── MatrixChannel        → ChannelKit + Shared + Networking
+  ├── IRCChannel           → ChannelKit + Shared
+  └── WebChatChannel       → ChannelKit + Shared + Hummingbird
 
-Provider Implementations (one package per provider):
-  ├── ClaudeProvider    → ProviderKit + Shared + Networking
-  ├── OpenAIProvider    → ProviderKit + Shared + Networking
-  ├── OllamaProvider    → ProviderKit + Shared + Networking
-  └── GeminiProvider    → ProviderKit + Shared + Networking
+Provider Implementations:
+  ├── ClaudeProvider       → ProviderKit + Shared + Networking
+  ├── OpenAIProvider       → ProviderKit + Shared + Networking
+  ├── OllamaProvider       → ProviderKit + Shared + Networking
+  └── GeminiProvider       → ProviderKit + Shared + Networking
 
 Core Layer:
-  ├── Gateway           → Shared + Logging + Hummingbird
-  ├── Sessions          → Shared + Logging + Storage
-  ├── Agents            → Shared + Logging + ProviderKit + Sessions
-  ├── Scheduling        → Shared + Logging
-  ├── MCPSupport        → Shared + Logging
-  └── Memory            → Shared + Logging + Storage + ProviderKit
+  ├── Gateway              → Shared + IRelayLogging + Hummingbird + HummingbirdWebSocket
+  ├── Sessions             → Shared + IRelayLogging + Storage + GRDB
+  ├── Agents               → Shared + IRelayLogging + ProviderKit + Sessions
+  ├── AgentSpawner         → Shared + IRelayLogging
+  ├── Scheduling           → Shared + IRelayLogging
+  ├── Voice                → Shared + IRelayLogging
+  ├── Memory               → Shared + IRelayLogging + Storage + ProviderKit + GRDB
+  └── MCPSupport           → Shared + IRelayLogging
 
 Service Layer:
-  └── Services          → Sessions + Agents + ChannelKit + ProviderKit + Storage + Scheduling
+  └── Services             → Sessions + Agents + ChannelKit + ProviderKit + Shared + Storage + Scheduling + IRelayLogging
 
-Executable Layer:
-  └── CLI               → Services + Gateway + all Channels + all Providers + ArgumentParser
-
-Test Support:
-  └── TestSupport       (no dependencies)
-```
-
-## Package.swift (Target Overview)
-
-```swift
-// swift-tools-version: 6.0
-
-import PackageDescription
-
-let package = Package(
-    name: "iRelay",
-    platforms: [.macOS(.v14), .iOS(.v17)],
-    products: [
-        // Foundation
-        .library(name: "Shared", targets: ["Shared"]),
-        .library(name: "Logging", targets: ["Logging"]),
-        .library(name: "Security", targets: ["Security"]),
-        .library(name: "Storage", targets: ["Storage"]),
-        .library(name: "Networking", targets: ["Networking"]),
-
-        // Protocols
-        .library(name: "ChannelKit", targets: ["ChannelKit"]),
-        .library(name: "ProviderKit", targets: ["ProviderKit"]),
-
-        // Channels
-        .library(name: "IMessageChannel", targets: ["IMessageChannel"]),
-        .library(name: "TelegramChannel", targets: ["TelegramChannel"]),
-        .library(name: "SlackChannel", targets: ["SlackChannel"]),
-        .library(name: "DiscordChannel", targets: ["DiscordChannel"]),
-        .library(name: "SignalChannel", targets: ["SignalChannel"]),
-        .library(name: "MatrixChannel", targets: ["MatrixChannel"]),
-        .library(name: "IRCChannel", targets: ["IRCChannel"]),
-        .library(name: "WebChatChannel", targets: ["WebChatChannel"]),
-
-        // Providers
-        .library(name: "ClaudeProvider", targets: ["ClaudeProvider"]),
-        .library(name: "OpenAIProvider", targets: ["OpenAIProvider"]),
-        .library(name: "OllamaProvider", targets: ["OllamaProvider"]),
-        .library(name: "GeminiProvider", targets: ["GeminiProvider"]),
-
-        // Core
-        .library(name: "Gateway", targets: ["Gateway"]),
-        .library(name: "Sessions", targets: ["Sessions"]),
-        .library(name: "Agents", targets: ["Agents"]),
-        .library(name: "Services", targets: ["Services"]),
-        .library(name: "Voice", targets: ["Voice"]),
-        .library(name: "Memory", targets: ["Memory"]),
-        .library(name: "MCPSupport", targets: ["MCPSupport"]),
-
-        // Executables
-        .executable(name: "irelay", targets: ["CLI"]),
-    ],
-    dependencies: [
-        // Server
-        .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
-        .package(url: "https://github.com/hummingbird-project/hummingbird-websocket.git", from: "2.0.0"),
-
-        // CLI
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
-
-        // Database
-        .package(url: "https://github.com/groue/GRDB.swift.git", from: "7.0.0"),
-
-        // Logging
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.5.0"),
-
-        // DI
-        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
-    ]
-)
+Executable:
+  └── CLI                  → Services + Gateway + all Channels + all Providers + IRelaySecurity + Storage + Sessions + Agents + AgentSpawner + Voice + Memory + MCPSupport + ArgumentParser
 ```
 
 ## Core Protocols
 
-### Channel (in ChannelKit)
+### Channel (ChannelKit)
 
 ```swift
 public protocol Channel: Actor {
     var id: String { get }
+    var displayName: String { get }
     var status: ChannelStatus { get }
+    var capabilities: ChannelCapabilities { get }
+    var limits: ChannelLimits { get }
 
     func start() async throws
     func stop() async throws
     func send(_ message: OutboundMessage) async throws
     func onMessage(_ handler: @escaping @Sendable (InboundMessage) async -> Void)
 }
-
-public enum ChannelStatus: Sendable, Equatable {
-    case disconnected
-    case connecting
-    case connected
-    case error(String)
-}
 ```
 
-### LLM Provider (in ProviderKit)
+`ChannelCapabilities` is an OptionSet: text, images, video, audio, files, links, reactions, typing, readReceipts, threads.
+
+`ChannelLimits` has predefined limits for iMessage, WhatsApp, Telegram.
+
+`ChannelRegistry` actor manages channel lifecycle (register, startAll, stopAll).
+
+### LLMProvider (ProviderKit)
 
 ```swift
 public protocol LLMProvider: Sendable {
     var id: String { get }
-    var models: [ModelInfo] { get }
+    var displayName: String { get }
+    var supportedModels: [ModelInfo] { get }
 
     func complete(
         _ messages: [ChatMessage],
         model: String,
-        tools: [ToolDefinition]
+        options: CompletionOptions
     ) -> AsyncThrowingStream<StreamEvent, Error>
-}
 
-public enum StreamEvent: Sendable {
-    case text(String)
-    case toolCall(ToolCall)
-    case done(Usage)
+    func validate() async throws -> Bool
 }
 ```
 
-### Message Types (in Shared)
+`StreamEvent`: text, toolCall, usage, done, error.
 
-```swift
-public struct InboundMessage: Sendable {
-    public let channelID: String
-    public let senderID: String
-    public let sessionID: String
-    public let content: MessageContent
-    public let timestamp: Date
-    public let replyTo: String?
-}
+`CompletionOptions`: maxTokens, temperature, topP, stopSequences, systemPrompt, tools, thinkingLevel.
 
-public struct OutboundMessage: Sendable {
-    public let sessionID: String
-    public let content: MessageContent
-}
-
-public enum MessageContent: Sendable {
-    case text(String)
-    case image(Data, mimeType: String)
-    case audio(Data, mimeType: String)
-    case file(Data, filename: String)
-}
-```
-
-### Session (in Sessions)
-
-```swift
-public struct Session: Identifiable, Codable, Sendable {
-    public let id: String
-    public let channelID: String
-    public let peerID: String
-    public let agentID: String?
-    public var history: [ChatMessage]
-    public var metadata: SessionMetadata
-    public let createdAt: Date
-    public var lastActiveAt: Date
-}
-```
-
-### Dependency Injection (Point-Free Dependencies)
-
-```swift
-// In ProviderKit
-@DependencyClient
-public struct LLMClient {
-    public var complete: @Sendable (
-        [ChatMessage], String, [ToolDefinition]
-    ) async throws -> AsyncThrowingStream<StreamEvent, Error>
-}
-
-// In ViewModel
-@Observable @MainActor
-final class ChatViewModel {
-    @ObservationIgnored @Dependency(\.llmClient) var llmClient
-    private(set) var state: LoadingState<[ChatMessage]> = .idle
-}
-```
+`ProviderRegistry` actor manages provider lifecycle.
 
 ## Channel Implementation Details
 
-| Channel | Protocol | Auth | Swift Approach |
-|---------|----------|------|----------------|
-| iMessage | Messages.framework / AppleScript | System permissions | Native macOS API |
-| Telegram | HTTPS + long polling | Bot token | URLSession + async/await |
-| Slack | WebSocket RTM + HTTPS | OAuth / Bot token | URLSessionWebSocketTask |
-| Discord | WebSocket Gateway + HTTPS | Bot token | URLSessionWebSocketTask |
-| Signal | signal-cli subprocess | Phone number | Process + pipe I/O |
-| Matrix | HTTPS + long polling | Access token | URLSession |
-| IRC | Raw TCP socket | None / NickServ | NWConnection (Network.framework) |
-| WebChat | Hummingbird serves HTML + WS | Session cookie | Built-in |
+| Channel | Send | Receive | Auth |
+|---------|------|---------|------|
+| iMessage | AppleScript → Messages.app | GRDB polling of chat.db | System permissions |
+| WhatsApp | Meta Graph API v21.0 | Webhook handler | Phone Number ID + token |
+| Telegram | `/sendMessage` REST | Long polling `/getUpdates` or webhook | Bot token |
+| Slack | `/chat.postMessage` REST | Events API handler | Bot token |
+| Discord | `/channels/{id}/messages` REST | Interactions only (no Gateway WS) | Bot token |
+| Signal | `signal-cli send` subprocess | `signal-cli receive --json` subprocess | Phone number |
+| Matrix | PUT `/send/m.room.message` | Long polling `/sync` | Access token |
+| IRC | PRIVMSG over TCP stream | Read loop from InputStream | NICK/USER registration |
+| WebChat | In-memory response store | POST `/chat/send` handler | Session cookie |
 
-## LLM Provider Details
+## Provider Implementation Details
 
-| Provider | API | Streaming | Swift Approach |
-|----------|-----|-----------|----------------|
-| Claude | Messages API | SSE | URLSession + AsyncBytes line parsing |
-| OpenAI | Chat Completions | SSE | URLSession + AsyncBytes line parsing |
-| Ollama | OpenAI-compatible | SSE | Same as OpenAI |
-| Gemini | generateContent | SSE | URLSession + AsyncBytes |
+| Provider | API | Streaming | Models |
+|----------|-----|-----------|--------|
+| Claude | Messages API | SSE | Sonnet 4, Opus 4, Haiku 3.5 |
+| OpenAI | Chat Completions | SSE | GPT-4o, GPT-4o Mini, o3-mini |
+| Ollama | OpenAI-compatible (localhost:11434) | NDJSON | Llama 3.3, Mistral, Code Llama |
+| Gemini | Generative AI | SSE | Gemini 2.0 Flash, Pro |
 
-All providers use the same SSE streaming pattern — parse `data:` lines from `AsyncBytes`.
-
-## Storage (GRDB + SQLite)
-
-All persistence via GRDB in the Storage package:
-
-- `sessions` — conversation sessions with channel/peer/agent binding
-- `messages` — message history per session
-- `config` — agent and channel configuration
-- `secrets` — encrypted credentials (backed by Keychain via Security package)
-- `embeddings` — vector storage for memory/recall (in Memory package)
-
-## Apple-Native Advantages
-
-| Feature | Framework | Package |
-|---------|-----------|---------|
-| Voice TTS | AVSpeechSynthesizer | Voice |
-| Voice STT | Speech.framework | Voice |
-| On-device AI | CoreML | Memory |
-| Secrets | Keychain Services | Security |
-| Daemon | LaunchAgent (macOS) | CLI |
-| Networking | Network.framework | IRCChannel |
-| Notifications | UserNotifications | Apps |
-| Shortcuts | App Intents | Apps |
-| Widgets | WidgetKit | Apps |
+All SSE-based providers share the same pattern: parse `data:` lines from `AsyncBytes`.
 
 ## CLI Commands
 
-```
-irelay serve            # Start gateway + all channels
-irelay chat             # Interactive CLI chat
-irelay config           # Manage agents, channels, providers
-irelay config channels  # List/add/remove channels
-irelay config providers # List/add/remove LLM providers
-irelay config agents    # List/add/remove agents
-irelay daemon install   # Install LaunchAgent
-irelay daemon uninstall # Remove LaunchAgent
-irelay status           # Show gateway + channel status
-```
+| Command | Status | Description |
+|---------|--------|-------------|
+| `irelay serve` | Working | Start gateway + register channels/providers via config |
+| `irelay chat` | Working | Interactive CLI chat with streaming |
+| `irelay agent-bridge` | Working | iMessage polling → Claude/Codex subprocess → reply |
+| `irelay imessage-test` | Working | iMessage channel test utility |
+| `irelay config` | Stub | Prints placeholder |
+| `irelay status` | Stub | Prints "idle" |
 
-## Build System
+### What `serve` actually wires up
 
-### Root Makefile (delegates to Packages/)
-```makefile
-%:
-	$(MAKE) -C Packages $@
-```
+ServeCommand currently registers:
+- **Claude** provider (via Keychain or `ANTHROPIC_API_KEY` env var)
+- **Telegram** channel (if configured in config file)
+- Agents from config file (or a default Claude agent)
+- ServiceOrchestrator for the message pipeline
 
-### Packages/Makefile
-```makefile
-build:
-	swift build -c release
+Other providers and channels compile into the CLI binary but are **not yet wired** in ServeCommand.
 
-build-debug:
-	swift build
+### What `agent-bridge` does
 
-test:
-	swift test
+AgentBridgeCommand is the primary way iRelay is used today:
+- Polls iMessage via IMessageChannel
+- Filters messages by `irelayy` prefix
+- Spawns `claude` or `codex` CLI as a subprocess via AgentSpawner
+- Sends response chunks back via iMessage
+- Tracks sessions, saves to markdown, manages memory
 
-lint:
-	swiftlint
+## Storage Schema (GRDB/SQLite)
 
-format:
-	swiftformat .
+- `sessions` — conversation sessions with channel/peer/agent binding
+- `messages` — message history per session
 
-install:
-	swift build -c release
-	cp .build/release/irelay /usr/local/bin/
+## External Dependencies
 
-clean:
-	swift package clean
-```
+| Package | Version | Used by |
+|---------|---------|---------|
+| [Hummingbird](https://github.com/hummingbird-project/hummingbird) | 2.0+ | Gateway, WebChatChannel |
+| [HummingbirdWebSocket](https://github.com/hummingbird-project/hummingbird-websocket) | 2.0+ | Gateway |
+| [GRDB.swift](https://github.com/groue/GRDB.swift) | 7.0+ | Storage, Sessions, IMessageChannel, Memory |
+| [swift-argument-parser](https://github.com/apple/swift-argument-parser) | 1.5+ | CLI |
+| [swift-log](https://github.com/apple/swift-log) | 1.5+ | IRelayLogging |
 
-## Phased Roadmap
+## Platform Requirements
 
-### Phase 1 — Core + 2 Channels (4-6 weeks)
-
-- [ ] Repo scaffolding (Main.xcworkspace, Packages/, Apps/)
-- [ ] Package.swift with initial targets
-- [ ] Shared + Logging + Storage + Networking packages
-- [ ] ChannelKit + ProviderKit protocols
-- [ ] Gateway (Hummingbird WebSocket)
-- [ ] Sessions + Agents
-- [ ] ClaudeProvider (SSE streaming)
-- [ ] TelegramChannel (Bot API)
-- [ ] IMessageChannel (macOS native)
-- [ ] CLI with serve + chat commands
-- [ ] macOS menu bar app (basic SwiftUI)
-
-### Phase 2 — Expand (4-6 weeks)
-
-- [ ] SlackChannel + DiscordChannel
-- [ ] OpenAIProvider + OllamaProvider
-- [ ] Voice package (TTS/STT)
-- [ ] Security package (Keychain)
-- [ ] iOS app (SwiftUI)
-- [ ] Agent configuration + multi-agent routing
-- [ ] Scheduling package (cron)
-- [ ] Services orchestration layer
-
-### Phase 3 — Polish (4-6 weeks)
-
-- [ ] MatrixChannel + SignalChannel + IRCChannel + WebChatChannel
-- [ ] GeminiProvider
-- [ ] Memory package (embeddings + vector search)
-- [ ] MCPSupport (Cupertino integration)
-- [ ] App Intents / Shortcuts
-- [ ] WidgetKit
-- [ ] LaunchAgent daemon management
-- [ ] install.sh
-
-## Estimated Scope
-
-| Metric | Estimate |
-|--------|----------|
-| SPM targets | ~30 libraries + 1 executable |
-| Test targets | ~15-20 |
-| Total Swift LOC | ~30,000-40,000 |
-| Source files | ~200-300 |
-| Channels | 8 |
-| LLM Providers | 4 |
-| Time to MVP (Phase 1) | 4-6 weeks |
-| Time to full product | 12-18 weeks |
+- Swift 6.0
+- macOS 14+ (Sonoma) / iOS 17+
+- Xcode 16+
