@@ -38,7 +38,7 @@ No web UI, no port forwarding, no VPN. iMessage as a transport layer.
 **Important:** The Mac running iRelay must be signed into a different Apple ID than the device you message it from. You're sending an iMessage between two separate accounts — your phone texts the Mac, not itself.
 
 Each response is prefixed with session info: `iRelay [session-id] #message-number (context-size)`. Sessions persist across messages so context carries over. Built-in commands:
-- `irelayy clear` / `reset` — wipe session history
+- `irelayy clear` / `reset` — wipe session and start a new one (new session ID)
 - `irelayy save` — persist session to `~/.irelay/sessions/` as markdown
 
 ## Architecture
