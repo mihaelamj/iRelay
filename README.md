@@ -67,15 +67,15 @@ No web UI, no port forwarding, no VPN. iMessage as a transport layer.
 
 | Channel | Status | Transport |
 |---------|--------|-----------|
-| iMessage | :white_check_mark: Working | Messages.framework / AppleScript |
-| Telegram | :white_check_mark: Working | Bot API (HTTPS + long polling / webhook) |
-| Slack | :white_check_mark: Working | Web API + Events API / Socket Mode |
+| iMessage | :white_check_mark: Tested | Messages.framework / AppleScript |
+| Telegram | :construction: Untested | Bot API (HTTPS + long polling / webhook) |
+| Slack | :construction: Untested | Web API + Events API / Socket Mode |
 | Discord | :warning: Partial ([#45](https://github.com/mihaelamj/iRelay/issues/45)) | REST send works, Gateway receive TBD |
-| Signal | :white_check_mark: Working | signal-cli subprocess |
-| Matrix | :white_check_mark: Working | Client-Server API + /sync polling |
-| IRC | :white_check_mark: Working | Raw TCP (Foundation streams) |
-| WebChat | :white_check_mark: Working | Hummingbird REST + HTML UI |
-| WhatsApp | :white_check_mark: Working | Business Cloud API + webhook |
+| Signal | :construction: Untested | signal-cli subprocess |
+| Matrix | :construction: Untested | Client-Server API + /sync polling |
+| IRC | :construction: Untested | Raw TCP (Foundation streams) |
+| WebChat | :construction: Untested | Hummingbird REST + HTML UI |
+| WhatsApp | :construction: Untested | Business Cloud API + webhook |
 
 **Not planned:** Email, SMS/Twilio, Microsoft Teams, Google Chat, Facebook Messenger, Mattermost, Line, Viber, Zulip.
 
