@@ -77,6 +77,8 @@ No web UI, no port forwarding, no VPN. iMessage as a transport layer.
 | WebChat | :white_check_mark: Working | Hummingbird REST + HTML UI |
 | WhatsApp | :white_check_mark: Working | Business Cloud API + webhook |
 
+**Not planned:** Email, SMS/Twilio, Microsoft Teams, Google Chat, Facebook Messenger, Mattermost, Line, Viber, Zulip.
+
 ### LLM Providers
 
 | Provider | Status | Streaming |
