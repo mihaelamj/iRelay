@@ -11,6 +11,9 @@ import ChannelKit
 import Services
 import ClaudeProvider
 import TelegramChannel
+#if os(macOS)
+import IOKit.pwr_mgt
+#endif
 
 struct ServeCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
@@ -25,10 +28,34 @@ struct ServeCommand: AsyncParsableCommand {
     var logLevel: String = "info"
 
     func run() async throws {
+        // Prevent macOS from sleeping while server is running (like caffeinate -s)
+        #if os(macOS)
+        var sleepAssertionID: IOPMAssertionID = 0
+        let sleepResult = IOPMAssertionCreateWithName(
+            kIOPMAssertionTypePreventUserIdleSystemSleep as CFString,
+            IOPMAssertionLevel(kIOPMAssertionLevelOn),
+            "iRelay server active" as CFString,
+            &sleepAssertionID
+        )
+        defer {
+            if sleepResult == kIOReturnSuccess {
+                IOPMAssertionRelease(sleepAssertionID)
+            }
+        }
+        #endif
+
         // 1. Bootstrap logging
         let level = parseLogLevel(logLevel)
         Log.bootstrap(level: level)
         let logger = Log.cli
+
+        #if os(macOS)
+        if sleepResult == kIOReturnSuccess {
+            logger.info("☕ Sleep prevention active")
+        } else {
+            logger.warning("Could not prevent sleep (IOReturn \(sleepResult))")
+        }
+        #endif
 
         logger.info("iRelay v\(IRelayVersion.current) starting...")
 

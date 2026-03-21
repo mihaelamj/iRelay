@@ -5,6 +5,9 @@ import Shared
 import IRelayLogging
 import IMessageChannel
 import ChannelKit
+#if os(macOS)
+import IOKit.pwr_mgt
+#endif
 
 // MARK: - Session History
 
@@ -136,6 +139,27 @@ struct AgentBridgeCommand: AsyncParsableCommand {
     func run() async throws {
         setbuf(stdout, nil)
         Log.bootstrap(level: .info)
+
+        // Prevent macOS from sleeping while bridge is running (like caffeinate -s)
+        #if os(macOS)
+        var sleepAssertionID: IOPMAssertionID = 0
+        let sleepResult = IOPMAssertionCreateWithName(
+            kIOPMAssertionTypePreventUserIdleSystemSleep as CFString,
+            IOPMAssertionLevel(kIOPMAssertionLevelOn),
+            "iRelay Agent Bridge active" as CFString,
+            &sleepAssertionID
+        )
+        if sleepResult == kIOReturnSuccess {
+            print("☕ Sleep prevention active (assertion \(sleepAssertionID))")
+        } else {
+            print("⚠️  Could not prevent sleep (IOReturn \(sleepResult))")
+        }
+        defer {
+            if sleepResult == kIOReturnSuccess {
+                IOPMAssertionRelease(sleepAssertionID)
+            }
+        }
+        #endif
 
         let sessions = BridgeSessions()
 
@@ -368,6 +392,7 @@ private func runAgent(
             var env = ProcessInfo.processInfo.environment
             env.removeValue(forKey: "CLAUDECODE")
             env.removeValue(forKey: "CLAUDE_CODE_SESSION")
+            env.removeValue(forKey: "CLAUDE_CODE_ENTRYPOINT")
             env.removeValue(forKey: "CLAUDE_CODE_ENTRY_POINT")
             process.environment = env
 
